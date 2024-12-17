@@ -1,8 +1,11 @@
 // Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
 
 /**
- * @import { AddCommentCommand, DeleteTalkCommand, SubmitTalkCommand, TalksQuery } from '../../shared/messages.js'
- * @import { Repository } from '../infrastructure/repository.js'
+ * @typedef {@import('../../shared/messages.js').AddCommentCommand} AddCommentCommand
+ * @typedef {@import('../../shared/messages.js').DeleteTalkCommand} DeleteTalkCommand
+ * @typedef {@import('../../shared/messages.js').SubmitTalkCommand} SubmitTalkCommand
+ * @typedef {@import('../../shared/messages.js').TalksQuery} TalksQuery
+ * @typedef {@import('../infrastructure/repository.js').Repository} Repository
  */
 
 import { CommandStatus } from '@muspellheim/shared';
@@ -16,6 +19,7 @@ import { Talk } from '../../shared/talks.js';
 // TODO Add metrics
 
 export class Service {
+  /** @type {Repository} */
   #repository;
 
   /**

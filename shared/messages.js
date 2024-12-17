@@ -1,3 +1,5 @@
+// Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
+
 import { Comment, Talk } from './talks.js';
 
 export class SubmitTalkCommand {

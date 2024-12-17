@@ -1,8 +1,10 @@
 // Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
 
 /**
- * @import { HealthContributorRegistry } from '../health.js'
- * @import * as express from 'express'
+ * @typedef {@import('@muspellheim/shared').HealthContributorRegistry} HealthContributorRegistry
+ * @typedef {@import('express')} express
+ *
+ * @typedef {@import('../application/service.js').Service} Service
  */
 
 import fs from 'node:fs/promises';
@@ -28,25 +30,30 @@ export class ActuatorController {
     );
   }
 
+  /** @type {string} */
   #packageJson;
-  #services;
+
+  /** @type {Service} */
+  #service;
+
+  /** @type {HealthContributorRegistry} */
   #healthContributorRegistry;
 
   /**
    * @param {string} packageJson
-   * @param {*} services
+   * @param {Service} service
    * @param {HealthContributorRegistry} healthContributorRegistry
    * @param {express.Express} app
    */
   constructor(
     packageJson,
-    services, // FIXME Services is not defined in library
+    service, // FIXME Services is not defined in library
     healthContributorRegistry,
     app,
   ) {
     // FIXME Services is not defined in library
     this.#packageJson = packageJson;
-    this.#services = services;
+    this.#service = service;
     this.#healthContributorRegistry = healthContributorRegistry;
 
     app.get('/actuator', this.#getActuator.bind(this));
@@ -124,7 +131,7 @@ export class ActuatorController {
     // TODO count warnings and errors
     // TODO create class MeterRegistry
 
-    const metrics = await this.#services.getMetrics();
+    const metrics = await this.#service.getMetrics();
     const timestamp = new Date().getTime();
     let body = `# TYPE talks_count gauge\ntalks_count ${metrics.talksCount} ${timestamp}\n\n`;
     body += `# TYPE presenters_count gauge\npresenters_count ${metrics.presentersCount} ${timestamp}\n\n`;

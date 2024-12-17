@@ -1,8 +1,9 @@
 // Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
 
 /**
- * @import { Service } from '../application/service.js'
- * @import express from 'express'
+ * @typedef {@import('express')} express
+ *
+ * @typedef {@import('../application/service.js').Service} Service
  */
 
 import {
@@ -19,12 +20,15 @@ import {
 } from '../../shared/messages.js';
 
 export class TalksController {
+  /** @type {Service} services */
   #services;
+
+  /** @type {LongPolling} */
   #longPolling;
 
   /**
    * @param {Service} services
-   * @param {express.Express}  app
+   * @param {express.Express} app
    */
   constructor(services, app) {
     this.#services = services;
@@ -65,7 +69,7 @@ export class TalksController {
           body: `Talk not found: "${query.title}".`,
         });
       }
-    } else if (request.headers.accept == 'text/event-stream') {
+    } else if (request.headers.accept === 'text/event-stream') {
       this.#eventStreamTalks(request, response);
     } else {
       this.#longPolling.poll(request, response);

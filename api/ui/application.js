@@ -1,9 +1,9 @@
 // Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
 
 /**
- * @import http from 'node:http'
- * @import { ServerConfiguration } from '../application/configuration.js'
- * @import { RepositoryConfiguration } from '../infrastructure/repository.js'
+ * @typedef {@import('node:http'} http
+ * @typedef {@import('../application/configuration.js'.ServerConfiguration} ServerConfiguration
+ * @typedef {@import('../infrastructure/repository.js'.RepositoryConfiguration} RepositoryConfiguration
  */
 
 import express from 'express';
@@ -18,10 +18,8 @@ import { TalksController } from './talks-controller.js';
 import { Repository } from '../infrastructure/repository.js';
 
 export class Application {
-  /** @type {string=} */ configName;
-  /** @type {string[]=} */ configLocation;
-
-  /** @type {http.Server} */ #server;
+  /** @type {http.Server} */
+  #server;
 
   async start() {
     // TODO Use logger instead of console
