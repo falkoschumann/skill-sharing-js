@@ -1,9 +1,0 @@
-{
-  "server": {
-    "host": "localhost",
-    "port": 3333
-  },
-  "repository": {
-    "fileName": "./testdata/e2e.application.json"
-  }
-}

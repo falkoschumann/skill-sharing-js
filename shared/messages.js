@@ -4,14 +4,14 @@ import { Comment, Talk } from './talks.js';
 
 export class SubmitTalkCommand {
   /**
-   * @param {SubmitTalkCommand} command
+   * @param {Partial<SubmitTalkCommand>} command
    */
   static create({ title, presenter, summary } = {}) {
     return new SubmitTalkCommand(title, presenter, summary);
   }
 
   /**
-   * @param {SubmitTalkCommand} command
+   * @param {Partial<SubmitTalkCommand>} command
    */
   static createTestInstance({
     title = 'Talk test title',
@@ -35,14 +35,14 @@ export class SubmitTalkCommand {
 
 export class AddCommentCommand {
   /**
-   * @param {AddCommentCommand} command
+   * @param {Partial<AddCommentCommand>} command
    */
   static create({ title, comment } = {}) {
     return new AddCommentCommand(title, comment);
   }
 
   /**
-   * @param {AddCommentCommand} command
+   * @param {Partial<AddCommentCommand>} command
    */
   static createTestInstance({
     title = 'Talk test title',
@@ -63,14 +63,14 @@ export class AddCommentCommand {
 
 export class DeleteTalkCommand {
   /**
-   * @param {DeleteTalkCommand} command
+   * @param {Partial<DeleteTalkCommand>} command
    */
   static create({ title } = {}) {
     return new DeleteTalkCommand(title);
   }
 
   /**
-   * @param {DeleteTalkCommand} command
+   * @param {Partial<DeleteTalkCommand>} command
    */
   static createTestInstance({ title = 'Talk test title' } = {}) {
     return new DeleteTalkCommand(title);
@@ -86,21 +86,21 @@ export class DeleteTalkCommand {
 
 export class TalksQuery {
   /**
-   * @param {TalksQuery} query
+   * @param {Partial<TalksQuery>} query
    */
   static create({ title } = {}) {
     return new TalksQuery(title);
   }
 
   /**
-   * @param {TalksQuery} query
+   * @param {Partial<TalksQuery>} query
    */
   static createTestInstance({ title = 'Talk test title' } = {}) {
     return new TalksQuery(title);
   }
 
   /**
-   * @param {string} [title=]
+   * @param {string} [title]
    */
   constructor(title) {
     this.title = title;
@@ -109,21 +109,21 @@ export class TalksQuery {
 
 export class TalksQueryResult {
   /**
-   * @param {TalksQueryResult} result
+   * @param {Partial<TalksQueryResult>} result
    */
   static create({ talks = [] } = {}) {
     return new TalksQueryResult(talks);
   }
 
   /**
-   * @param {TalksQueryResult} result
+   * @param {Partial<TalksQueryResult>} result
    */
   static createTestInstance({ talks = [Talk.createTestInstance()] } = {}) {
     return new TalksQueryResult(talks);
   }
 
   /**
-   * @param {TalksQueryResult} result
+   * @param {Partial<TalksQueryResult>} result
    */
   static createTestInstanceWithComment({
     talks = [Talk.createTestInstanceWithComment()],
@@ -132,9 +132,9 @@ export class TalksQueryResult {
   }
 
   /**
-   * @param {Talk[]|Talk} talks
+   * @param {Talk[]} talks
    */
   constructor(talks) {
-    this.talks = Array.isArray(talks) ? talks : [talks];
+    this.talks = talks;
   }
 }

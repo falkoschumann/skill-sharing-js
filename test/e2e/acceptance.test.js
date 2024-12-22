@@ -1,15 +1,20 @@
 // Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
 
 import fs from 'node:fs/promises';
+import path from 'node:path';
 import puppeteer from 'puppeteer';
 import { describe, expect, it } from 'vitest';
 
-import { Application } from '../../api/ui/application.js';
-
-// TODO Use testdata folder
+import {
+  ServerConfiguration,
+  SkillSharingApplication,
+  SkillSharingConfiguration,
+} from '../../api/ui/application.js';
+import { RepositoryConfiguration } from '../../api/infrastructure/repository.js';
 
 /**
- * @import { Browser, Page } from 'puppeteer'
+ * @typedef {import('puppeteer').Browser} Browser
+ * @typedef {import('puppeteer').Page} Page
  */
 
 describe('User Acceptance Tests', () => {
@@ -37,30 +42,34 @@ describe('User Acceptance Tests', () => {
   });
 });
 
-async function startAndStop(fn) {
-  const talksFile = new URL('../../data/talks.json', import.meta.url).pathname;
-  const screenshotsDir = new URL('../../screenshots', import.meta.url).pathname;
-  let application;
-  let browser;
+/**
+ * @param {function(Browser): Promise<void>} run
+ */
+async function startAndStop(run) {
+  const fileName = path.join(
+    import.meta.dirname,
+    '../../testdata/e2e.acceptance.json',
+  );
+  await fs.rm(fileName, { force: true });
+  const screenshotsDir = path.join(import.meta.dirname, '../../screenshots');
+  await fs.mkdir(screenshotsDir, { recursive: true });
+
+  const configuration = SkillSharingConfiguration.create({
+    server: ServerConfiguration.create({ address: 'localhost', port: 4444 }),
+    repository: RepositoryConfiguration.create({ fileName }),
+  });
+
+  const application = SkillSharingApplication.create(configuration);
+  await application.start();
+  // FIXME https://pptr.dev/troubleshooting#setting-up-chrome-linux-sandbox
+  const browser = await puppeteer.launch({
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  });
   try {
-    await fs.mkdir(screenshotsDir, { recursive: true });
-    await fs.rm(talksFile, { force: true });
-
-    application = new Application();
-    process.env.CONFIG_LOCATION = new URL('.', import.meta.url).pathname;
-    await application.start();
-    // FIXME https://pptr.dev/troubleshooting#setting-up-chrome-linux-sandbox
-    browser = await puppeteer.launch({
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    });
-
-    await fn(browser);
+    await run(browser);
   } finally {
-    await browser?.close();
-    // FIXME stop server safely
-    // without await open handles are not closed
-    // with await the test causes a timeout
-    application?.stop();
+    await browser.close();
+    await application.stop();
   }
 }
 

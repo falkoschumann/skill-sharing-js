@@ -2,14 +2,14 @@
 
 export class Talk {
   /**
-   * @param {Talk} talk
+   * @param {Partial<Talk>} talk
    */
   static create({ title, presenter, summary, comments = [] } = {}) {
     return new Talk(title, presenter, summary, comments);
   }
 
   /**
-   * @param {Talk} talk
+   * @param {Partial<Talk>} talk
    */
   static createTestInstance({
     title = 'Talk test title',
@@ -21,7 +21,7 @@ export class Talk {
   }
 
   /**
-   * @param {Talk} talk
+   * @param {Partial<Talk>} talk
    */
   static createTestInstanceWithComment({
     title = 'Talk test title',
@@ -44,18 +44,25 @@ export class Talk {
     this.summary = summary;
     this.comments = comments;
   }
+
+  /**
+   * @param {Comment} comment
+   */
+  addComment(comment) {
+    this.comments.push(comment);
+  }
 }
 
 export class Comment {
   /**
-   * @param {Comment} comment
+   * @param {Partial<Comment>} comment
    */
   static create({ author, message } = {}) {
     return new Comment(author, message);
   }
 
   /**
-   * @param {Comment} talk
+   * @param {Partial<Comment>} talk
    */
   static createTestInstance({
     author = 'Comment test author',

@@ -46,7 +46,7 @@ describe('Repository', () => {
 
       const result = repository.findAll();
 
-      expect(result).rejects.toThrow(SyntaxError);
+      await expect(result).rejects.toThrow(SyntaxError);
     });
   });
 
@@ -81,7 +81,7 @@ describe('Repository', () => {
 
       const result = repository.findByTitle('Any title');
 
-      expect(result).rejects.toThrow(SyntaxError);
+      await expect(result).rejects.toThrow(SyntaxError);
     });
   });
 
@@ -128,7 +128,7 @@ describe('Repository', () => {
       const talk = Talk.createTestInstance();
       const result = repository.addOrUpdate(talk);
 
-      expect(result).rejects.toThrow(SyntaxError);
+      await expect(result).rejects.toThrow(SyntaxError);
     });
   });
 
@@ -157,7 +157,7 @@ describe('Repository', () => {
 
       const result = repository.remove('Any title');
 
-      expect(result).rejects.toThrow(SyntaxError);
+      await expect(result).rejects.toThrow(SyntaxError);
     });
   });
 

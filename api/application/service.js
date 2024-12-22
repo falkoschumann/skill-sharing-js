@@ -1,17 +1,18 @@
 // Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
 
 /**
- * @typedef {@import('../../shared/messages.js').AddCommentCommand} AddCommentCommand
- * @typedef {@import('../../shared/messages.js').DeleteTalkCommand} DeleteTalkCommand
- * @typedef {@import('../../shared/messages.js').SubmitTalkCommand} SubmitTalkCommand
- * @typedef {@import('../../shared/messages.js').TalksQuery} TalksQuery
- * @typedef {@import('../infrastructure/repository.js').Repository} Repository
+ * @typedef {import('../../shared/messages.js').AddCommentCommand} AddCommentCommand
+ * @typedef {import('../../shared/messages.js').DeleteTalkCommand} DeleteTalkCommand
+ * @typedef {import('../../shared/messages.js').SubmitTalkCommand} SubmitTalkCommand
+ * @typedef {import('../../shared/messages.js').TalksQuery} TalksQuery
+ * @typedef {import('../infrastructure/./repository.js').RepositoryConfiguration} RepositoryConfiguration
  */
 
 import { CommandStatus } from '@muspellheim/shared';
 
 import { TalksQueryResult } from '../../shared/messages.js';
 import { Talk } from '../../shared/talks.js';
+import { Repository } from '../infrastructure/repository.js';
 
 // TODO Handle errors
 // TODO Add logging
@@ -19,6 +20,22 @@ import { Talk } from '../../shared/talks.js';
 // TODO Add metrics
 
 export class Service {
+  /**
+   * @param {{repository: RepositoryConfiguration}} configuration
+   */
+  static create(configuration) {
+    const repository = Repository.create(configuration.repository);
+    return new Service(repository);
+  }
+
+  /**
+   * @param {{talks?: Talk[]}} options
+   */
+  static createNull({ talks } = {}) {
+    const repository = Repository.createNull({ talks });
+    return new Service(repository);
+  }
+
   /** @type {Repository} */
   #repository;
 
@@ -49,7 +66,7 @@ export class Service {
       );
     }
 
-    talk.comments.push(command.comment);
+    talk.addComment(command.comment);
     await this.#repository.addOrUpdate(talk);
     return CommandStatus.success();
   }
@@ -67,7 +84,8 @@ export class Service {
    */
   async getTalks(query) {
     if (query?.title != null) {
-      const talks = await this.#repository.findByTitle(query.title);
+      const talk = await this.#repository.findByTitle(query.title);
+      const talks = talk ? [talk] : [];
       return TalksQueryResult.create({ talks });
     }
 

@@ -1,9 +1,0 @@
-{
-  "server": {
-    "host": "localhost",
-    "port": 3333
-  },
-  "repository": {
-    "fileName": "./test/server/data/corrupt.json"
-  }
-}

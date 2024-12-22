@@ -1,7 +1,7 @@
 // Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
 
 /**
- * @import { MessageClient } from '@muspellheim/shared'
+ * @typedef {import('@muspellheim/shared').MessageClient} MessageClient
  */
 
 import { LongPollingClient, OutputTracker } from '@muspellheim/shared';

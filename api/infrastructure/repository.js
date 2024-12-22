@@ -7,9 +7,13 @@ import { Talk } from '../../shared/talks.js';
 
 export class RepositoryConfiguration {
   /**
-   * @param {RepositoryConfiguration} [configuration]
+   * @param {Partial<RepositoryConfiguration>} [configuration]
    */
   static create({ fileName = './data/talks.json' } = {}) {
+    return new RepositoryConfiguration(fileName);
+  }
+
+  static createTestInstance({ fileName = 'null-repository.json' } = {}) {
     return new RepositoryConfiguration(fileName);
   }
 
@@ -31,13 +35,16 @@ export class Repository {
    */
   static createNull({ talks } = {}) {
     return new Repository(
-      RepositoryConfiguration.create({ fileName: 'null-repository.json' }),
+      RepositoryConfiguration.createTestInstance(),
       // @ts-ignore
       new FsStub(talks),
     );
   }
 
+  /** @type {RepositoryConfiguration} */
   #configuration;
+
+  /** @type {typeof fsPromise} */
   #fs;
 
   /**
@@ -50,8 +57,8 @@ export class Repository {
   }
 
   async findAll() {
-    const mappedTalks = await this.#load();
-    return unmapTalks(mappedTalks);
+    const talks = await this.#load();
+    return talks.validate();
   }
 
   /**
@@ -85,20 +92,16 @@ export class Repository {
     await this.#store(talks);
   }
 
-  /**
-   * @returns {Promise<Record<string, Talk>>}
-   */
   async #load() {
     try {
-      const json = await this.#fs.readFile(
-        this.#configuration.fileName,
-        'utf-8',
-      );
-      return JSON.parse(json);
+      const { fileName } = this.#configuration;
+      const json = await this.#fs.readFile(fileName, 'utf-8');
+      const dto = JSON.parse(json);
+      return TalksDto.create(dto);
     } catch (error) {
       if (error.code === 'ENOENT') {
         // No such file or directory
-        return {};
+        return TalksDto.create();
       }
 
       throw error;
@@ -106,34 +109,69 @@ export class Repository {
   }
 
   /**
-   * @param {Record<string, Talk>} talksMap
+   * @param {TalksDto} talks
    */
-  async #store(talksMap) {
+  async #store(talks) {
     const dirName = path.dirname(this.#configuration.fileName);
     await this.#fs.mkdir(dirName, { recursive: true });
 
-    const json = JSON.stringify(talksMap);
-    await this.#fs.writeFile(this.#configuration.fileName, json, 'utf-8');
+    const { fileName } = this.#configuration;
+    const json = JSON.stringify(talks);
+    await this.#fs.writeFile(fileName, json, 'utf-8');
+  }
+}
+
+class TalksDto {
+  /**
+   * @param {Record<string, Talk>} dto
+   */
+  static create(dto = {}) {
+    return new TalksDto(dto);
+  }
+
+  /**
+   * @param {Talk[]} talks
+   */
+  static from(talks) {
+    /** @type {Record<string, Talk>} */
+    const map = {};
+    for (const talk of talks) {
+      map[talk.title] = talk;
+    }
+    return new TalksDto(map);
+  }
+
+  /**
+   * @param {Record<string, Talk>} talks
+   */
+  constructor(talks) {
+    for (const title in talks) {
+      this[title] = talks[title];
+    }
+  }
+
+  validate() {
+    return Object.values(this).map((talk) => Talk.create(talk));
   }
 }
 
 class FsStub {
+  /** @type {string} */
   #fileContent;
 
   /**
-   * @param {Talk[]} [talks=]
+   * @param {Talk[]} [talks]
    */
   constructor(talks) {
     if (talks != null) {
-      const mappedTalks = mapTalks(talks);
-      this.#fileContent = JSON.stringify(mappedTalks);
+      this.#fileContent = JSON.stringify(TalksDto.from(talks));
     }
   }
 
-  readFile() {
+  async readFile() {
     if (this.#fileContent == null) {
       const err = new Error('No such file or directory');
-      // @ts-ignore NodeJS error code
+      // @ts-ignore
       err.code = 'ENOENT';
       throw err;
     }
@@ -141,28 +179,9 @@ class FsStub {
     return this.#fileContent;
   }
 
-  writeFile(_file, data) {
+  async writeFile(_file, data) {
     this.#fileContent = data;
   }
 
   mkdir() {}
-}
-
-/**
- * @param {Talk[]} talks
- */
-function mapTalks(talks) {
-  /** @type {Record<string, Talk>} */
-  const mappedTalks = {};
-  for (const talk of talks) {
-    mappedTalks[talk.title] = talk;
-  }
-  return mappedTalks;
-}
-
-/**
- * @param {Record<string, Talk>} talksMap
- */
-function unmapTalks(talksMap) {
-  return Object.values(talksMap).map((talk) => Talk.create(talk));
 }

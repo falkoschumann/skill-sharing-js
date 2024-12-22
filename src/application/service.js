@@ -1,7 +1,7 @@
 // Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
 
 /**
- * @import { Store } from '@muspellheim/shared'
+ * @typedef {import('@muspellheim/shared').Store} Store
  */
 
 import { createStore } from '@muspellheim/shared';
