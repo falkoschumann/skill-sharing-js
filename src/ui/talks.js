@@ -80,7 +80,7 @@ class TalksComponent extends Container {
     const formData = new FormData(form);
     Service.get().addComment({
       title: formData.get('talkTitle'),
-      comment: formData.get('comment'),
+      message: formData.get('comment'),
     });
     form.reset();
   }

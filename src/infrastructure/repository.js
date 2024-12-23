@@ -9,12 +9,15 @@ export class Repository {
     return new Repository(localStorage);
   }
 
-  static createNull(user) {
+  /**
+   * @param {{user?:User}} [user]
+   */
+  static createNull({ user } = {}) {
     return new Repository(new StorageStub(user));
   }
 
+  /** @type {Storage} */
   #storage;
-  #lastUser;
 
   /**
    * @oaram {Storage} storage
@@ -23,24 +26,25 @@ export class Repository {
     this.#storage = storage;
   }
 
+  /**
+   * @returns {Promise<User|undefined>}
+   */
   async load() {
     const json = this.#storage.getItem(storageKey);
     if (json == null) {
-      return {};
+      return;
     }
 
     const user = JSON.parse(json);
     return User.create(user);
   }
 
+  /**
+   * @param {User} user
+   */
   async store(user) {
     const json = JSON.stringify(user);
     this.#storage.setItem(storageKey, json);
-    this.#lastUser = json;
-  }
-
-  get lastUser() {
-    return JSON.parse(this.#lastUser);
   }
 }
 
@@ -55,5 +59,7 @@ class StorageStub {
     return this.#item;
   }
 
-  setItem() {}
+  setItem(_key, item) {
+    this.#item = item;
+  }
 }

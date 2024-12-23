@@ -2,11 +2,16 @@
 
 /* @vitest-environment jsdom */
 
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { Repository } from '../../../src/infrastructure/repository.js';
+import { User } from '../../../src/domain/users.js';
 
 describe('Repository', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
   it('Loads and store settings', async () => {
     const repository = Repository.create();
 
@@ -17,26 +22,39 @@ describe('Repository', () => {
   });
 
   it('Loads empty object when storage is empty', async () => {
-    const repository = Repository.createNull();
+    const repository = Repository.create();
 
     const settings = await repository.load();
 
-    expect(settings).toEqual({});
+    expect(settings).toBeUndefined();
   });
 
-  it('Loads stored settings', async () => {
-    const repository = Repository.createNull({ username: 'Alice' });
+  describe('Memory repository', () => {
+    it('Creates empty', async () => {
+      const repository = Repository.createNull();
 
-    const settings = await repository.load();
+      const settings = await repository.load();
 
-    expect(settings).toEqual({ username: 'Alice' });
-  });
+      expect(settings).toBeUndefined();
+    });
 
-  it('Remember last stored settings', async () => {
-    const repository = Repository.createNull();
+    it('Initializes with user', async () => {
+      const repository = Repository.createNull({
+        user: User.create({ username: 'Bob' }),
+      });
 
-    await repository.store({ username: 'Alice' });
+      const settings = await repository.load();
 
-    expect(repository.lastUser).toEqual({ username: 'Alice' });
+      expect(settings).toEqual({ username: 'Bob' });
+    });
+
+    it('Loads and store settings', async () => {
+      const repository = Repository.createNull();
+
+      await repository.store({ username: 'Charly' });
+      const settings = await repository.load();
+
+      expect(settings).toEqual({ username: 'Charly' });
+    });
   });
 });

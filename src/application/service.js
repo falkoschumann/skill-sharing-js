@@ -2,13 +2,22 @@
 
 /**
  * @typedef {import('@muspellheim/shared').Store} Store
+ * @typedef {import('../infrastructure/api.js').TalksUpdatedEvent} TalksUpdatedEvent
  */
 
 import { createStore } from '@muspellheim/shared';
 
+import {
+  AddCommentCommand,
+  DeleteTalkCommand,
+  SubmitTalkCommand,
+} from '../../shared/messages.js';
+import { Comment } from '../../shared/talks.js';
+import * as actions from '../domain/actions.js';
 import { reducer } from '../domain/reducer.js';
 import { Api } from '../infrastructure/api.js';
 import { Repository } from '../infrastructure/repository.js';
+import { User } from '../domain/users.js';
 
 // TODO Handle errors
 // TODO Add logging
@@ -19,6 +28,7 @@ export class Service {
   /** @type {Service} */ static #instance;
 
   static get() {
+    // TODO Move configuration to main or app
     if (Service.#instance == null) {
       Service.#instance = new Service(
         createStore(reducer),
@@ -30,8 +40,13 @@ export class Service {
     return Service.#instance;
   }
 
+  /** @type {Store} */
   #store;
+
+  /** @type {Repository} */
   #repository;
+
+  /** @type {Api} */
   #api;
 
   /**
@@ -50,37 +65,41 @@ export class Service {
   }
 
   async changeUser({ username }) {
-    this.#store.dispatch({ type: 'change-user', username });
-    await this.#repository.store({ username });
+    this.#store.dispatch(actions.changeUser(username));
+    await this.#repository.store(User.create({ username }));
   }
 
   async loadUser() {
-    const { username = 'Anon' } = await this.#repository.load();
-    this.#store.dispatch({ type: 'change-user', username });
+    const user = await this.#repository.load();
+    this.#store.dispatch(actions.changeUser(user?.username ?? 'Anon'));
   }
 
   async submitTalk({ title, summary }) {
     const presenter = this.#store.getState().user;
-    const talk = { title, presenter, summary };
-    await this.#api.putTalk(talk);
+    const command = SubmitTalkCommand.create({ title, presenter, summary });
+    await this.#api.submitTalk(command);
   }
 
-  async addComment({ title, comment }) {
+  async addComment({ title, message }) {
     const author = this.#store.getState().user;
-    await this.#api.postComment(title, {
-      author,
-      message: comment,
+    const command = AddCommentCommand.create({
+      title,
+      comment: Comment.create({ author, message }),
     });
+    await this.#api.addComment(command);
   }
 
   async deleteTalk({ title }) {
-    await this.#api.deleteTalk(title);
+    const command = DeleteTalkCommand.create({ title });
+    await this.#api.deleteTalk(command);
   }
 
   async connectTalks() {
-    this.#api.addEventListener('talks-updated', (event) =>
-      this.#store.dispatch({ type: 'talks-updated', talks: event.talks }),
+    this.#api.addEventListener(
+      'talks-updated',
+      (/** @type {TalksUpdatedEvent} */ event) =>
+        this.#store.dispatch(actions.talksUpdated(event.talks)),
     );
-    await this.#api.connectTalks();
+    await this.#api.connect();
   }
 }

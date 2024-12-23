@@ -5,7 +5,12 @@ import { describe, expect, it } from 'vitest';
 import { LongPollingClient } from '@muspellheim/shared';
 
 import { Api } from '../../../src/infrastructure/api.js';
-import { Talk } from '../../../shared/talks.js';
+import { Comment, Talk } from '../../../shared/talks.js';
+import {
+  AddCommentCommand,
+  DeleteTalkCommand,
+  SubmitTalkCommand,
+} from '../../../shared/messages.js';
 
 describe('API', () => {
   it('Gets talks', async () => {
@@ -24,7 +29,7 @@ describe('API', () => {
     );
     api.addEventListener('talks-updated', (event) => events.push(event));
 
-    await api.connectTalks();
+    await api.connect();
     await result;
 
     expect(events).toEqual([
@@ -35,18 +40,42 @@ describe('API', () => {
     client.close();
   });
 
-  it('Puts talk', async () => {
+  it('Submits talk', async () => {
     const api = Api.createNull();
-    const talksPut = api.trackTalksPut();
+    const talksPut = api.trackTalksSubmitted();
 
-    await api.putTalk({
-      title: 'title-1',
-      presenter: 'presenter-1',
-      summary: 'summary-1',
-    });
+    await api.submitTalk(
+      SubmitTalkCommand.create({
+        title: 'title-1',
+        presenter: 'presenter-1',
+        summary: 'summary-1',
+      }),
+    );
 
     expect(talksPut.data).toEqual([
       { title: 'title-1', presenter: 'presenter-1', summary: 'summary-1' },
+    ]);
+  });
+
+  it('Posts comment', async () => {
+    const api = Api.createNull();
+    const commentsPosted = api.trackCommentsAdded();
+
+    await api.addComment(
+      AddCommentCommand.create({
+        title: 'title-1',
+        comment: Comment.create({
+          author: 'author-1',
+          message: 'message-1',
+        }),
+      }),
+    );
+
+    expect(commentsPosted.data).toEqual([
+      {
+        title: 'title-1',
+        comment: { author: 'author-1', message: 'message-1' },
+      },
     ]);
   });
 
@@ -54,22 +83,8 @@ describe('API', () => {
     const api = Api.createNull();
     const talksDeleted = api.trackTalksDeleted();
 
-    await api.deleteTalk('title-1');
+    await api.deleteTalk(DeleteTalkCommand.create({ title: 'title-1' }));
 
     expect(talksDeleted.data).toEqual([{ title: 'title-1' }]);
-  });
-
-  it('Posts comment', async () => {
-    const api = Api.createNull();
-    const commentsPosted = api.trackCommentsPosted();
-
-    await api.postComment('title-1', {
-      author: 'author-1',
-      message: 'message-1',
-    });
-
-    expect(commentsPosted.data).toEqual([
-      { title: 'title-1', author: 'author-1', message: 'message-1' },
-    ]);
   });
 });

@@ -2,14 +2,14 @@
 
 export class User {
   /**
-   * @param {User} user
+   * @param {Partial<User>} user
    */
   static create({ username }) {
     return new User(username);
   }
 
   /**
-   * @param {User} user
+   * @param {Partial<User>} user
    */
   static createTestInstance({ username = 'User test username' } = {}) {
     return new User(username);

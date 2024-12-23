@@ -2,20 +2,30 @@
 
 /**
  * @typedef {import('@muspellheim/shared').MessageClient} MessageClient
+ *
+ * @typedef {import('../../shared/messages.js').AddCommentCommand} AddCommentCommand
+ * @typedef {import('../../shared/messages.js').DeleteTalkCommand} DeleteTalkCommand
+ * @typedef {import('../../shared/messages.js').SubmitTalkCommand} SubmitTalkCommand
  */
 
 import { LongPollingClient, OutputTracker } from '@muspellheim/shared';
 
 import { Talk } from '../../shared/talks.js';
 
-const TALKS_UPDATED_EVENT = 'talks-updated';
+const BASE_URL = '/api/talks';
+
 const TALK_PUT_EVENT = 'talk-put';
 const TALK_DELETED_EVENT = 'talk-deleted';
 const COMMENT_POSTED_EVENT = 'comment-posted';
 
 export class TalksUpdatedEvent extends Event {
+  static TYPE = 'talks-updated';
+
+  /**
+   * @param {Talk[]} talks
+   */
   constructor(talks) {
-    super(TALKS_UPDATED_EVENT);
+    super(TalksUpdatedEvent.TYPE);
     this.talks = talks;
   }
 }
@@ -28,11 +38,23 @@ export class Api extends EventTarget {
     );
   }
 
-  static createNull() {
-    return new Api(LongPollingClient.createNull(), fetchStub);
+  /**
+   * @param {object} [options]
+   * @param {object} [options.fetchResponse]
+   * @returns {Api}
+   */
+  static createNull({ fetchResponse } = {}) {
+    return new Api(
+      LongPollingClient.createNull({ fetchResponse }),
+      // @ts-ignore
+      fetchStub,
+    );
   }
 
+  /** @type {MessageClient} */
   #talksClient;
+
+  /** @type {typeof globalThis.fetch} */
   #fetch;
 
   /**
@@ -44,41 +66,74 @@ export class Api extends EventTarget {
     this.#talksClient = talksClient;
     this.#fetch = fetch;
 
-    this.#talksClient.addEventListener('message', (event) => {
-      const dtos = JSON.parse(event.data);
-      const talks = dtos.map((dto) => Talk.create(dto));
-      this.dispatchEvent(new TalksUpdatedEvent(talks));
-    });
+    this.#talksClient.addEventListener(
+      'message',
+      this.#handleMessage.bind(this),
+    );
   }
 
-  async connectTalks() {
-    await this.#talksClient.connect('/api/talks');
+  async connect() {
+    await this.#talksClient.connect(BASE_URL);
   }
 
-  async putTalk({ title, presenter, summary }) {
-    const body = JSON.stringify({ presenter, summary });
-    await this.#fetch(`/api/talks/${encodeURIComponent(title)}`, {
+  async close() {
+    await this.#talksClient.close();
+  }
+
+  /**
+   * @param {SubmitTalkCommand} command
+   */
+  async submitTalk(command) {
+    const body = JSON.stringify(command);
+    await this.#fetch(`${BASE_URL}/${encodeURIComponent(command.title)}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body,
     });
     this.dispatchEvent(
       new CustomEvent(TALK_PUT_EVENT, {
-        detail: { title, presenter, summary },
+        detail: command,
       }),
     );
   }
 
-  trackTalksPut() {
+  trackTalksSubmitted() {
     return OutputTracker.create(this, TALK_PUT_EVENT);
   }
 
-  async deleteTalk(title) {
-    await this.#fetch(`/api/talks/${encodeURIComponent(title)}`, {
+  /**
+   * @param {AddCommentCommand} command
+   */
+  async addComment(command) {
+    const body = JSON.stringify(command.comment);
+    await this.#fetch(
+      `${BASE_URL}/${encodeURIComponent(command.title)}/comments`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body,
+      },
+    );
+    this.dispatchEvent(
+      new CustomEvent(COMMENT_POSTED_EVENT, {
+        detail: command,
+      }),
+    );
+  }
+
+  trackCommentsAdded() {
+    return OutputTracker.create(this, COMMENT_POSTED_EVENT);
+  }
+
+  /**
+   * @param {DeleteTalkCommand} command
+   */
+  async deleteTalk(command) {
+    await this.#fetch(`${BASE_URL}/${encodeURIComponent(command.title)}`, {
       method: 'DELETE',
     });
     this.dispatchEvent(
-      new CustomEvent(TALK_DELETED_EVENT, { detail: { title } }),
+      new CustomEvent(TALK_DELETED_EVENT, { detail: command }),
     );
   }
 
@@ -86,22 +141,13 @@ export class Api extends EventTarget {
     return OutputTracker.create(this, TALK_DELETED_EVENT);
   }
 
-  async postComment(title, { author, message }) {
-    const body = JSON.stringify({ author, message });
-    await this.#fetch(`/api/talks/${encodeURIComponent(title)}/comments`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body,
-    });
-    this.dispatchEvent(
-      new CustomEvent(COMMENT_POSTED_EVENT, {
-        detail: { title, author, message },
-      }),
-    );
-  }
-
-  trackCommentsPosted() {
-    return OutputTracker.create(this, COMMENT_POSTED_EVENT);
+  /**
+   * @param {MessageEvent} event
+   */
+  #handleMessage(event) {
+    const dtos = JSON.parse(event.data);
+    const talks = dtos.map((dto) => Talk.create(dto));
+    this.dispatchEvent(new TalksUpdatedEvent(talks));
   }
 }
 
