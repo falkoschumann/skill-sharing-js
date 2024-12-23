@@ -1,12 +1,11 @@
 // Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
 
 import { html } from 'lit-html';
+import { Container } from '@muspellheim/shared/browser';
 
-import { Component } from '@muspellheim/shared/browser';
+import * as actions from '../domain/actions.js';
 
-import { Service } from '../application/service.js';
-
-class TalkFormComponent extends Component {
+class TalkFormComponent extends Container {
   getView() {
     return html`
       <form @submit=${(e) => this.#formSubmitted(e)}>
@@ -48,10 +47,9 @@ class TalkFormComponent extends Component {
 
   #submitTalk(form) {
     const formData = new FormData(form);
-    Service.get().submitTalk({
-      title: formData.get('title'),
-      summary: formData.get('summary'),
-    });
+    this.store.dispatch(
+      actions.submitTalk(formData.get('title'), formData.get('summary')),
+    );
     form.reset();
   }
 }

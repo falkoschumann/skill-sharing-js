@@ -14,9 +14,9 @@ import { Talk } from '../../shared/talks.js';
 
 const BASE_URL = '/api/talks';
 
-const TALK_PUT_EVENT = 'talk-put';
-const TALK_DELETED_EVENT = 'talk-deleted';
-const COMMENT_POSTED_EVENT = 'comment-posted';
+export const TALK_SUBMITTED_EVENT = 'talk-submitted';
+export const TALK_DELETED_EVENT = 'talk-deleted';
+export const COMMENT_ADDED_EVENT = 'comment-added';
 
 export class TalksUpdatedEvent extends Event {
   static TYPE = 'talks-updated';
@@ -91,14 +91,14 @@ export class Api extends EventTarget {
       body,
     });
     this.dispatchEvent(
-      new CustomEvent(TALK_PUT_EVENT, {
+      new CustomEvent(TALK_SUBMITTED_EVENT, {
         detail: command,
       }),
     );
   }
 
   trackTalksSubmitted() {
-    return OutputTracker.create(this, TALK_PUT_EVENT);
+    return OutputTracker.create(this, TALK_SUBMITTED_EVENT);
   }
 
   /**
@@ -115,14 +115,14 @@ export class Api extends EventTarget {
       },
     );
     this.dispatchEvent(
-      new CustomEvent(COMMENT_POSTED_EVENT, {
+      new CustomEvent(COMMENT_ADDED_EVENT, {
         detail: command,
       }),
     );
   }
 
   trackCommentsAdded() {
-    return OutputTracker.create(this, COMMENT_POSTED_EVENT);
+    return OutputTracker.create(this, COMMENT_ADDED_EVENT);
   }
 
   /**

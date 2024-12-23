@@ -1,10 +1,9 @@
 // Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
 
 import { html } from 'lit-html';
-
 import { Container } from '@muspellheim/shared/browser';
 
-import { Service } from '../application/service.js';
+import * as actions from '../domain/actions.js';
 import './talks.css';
 
 class TalksComponent extends Container {
@@ -21,11 +20,7 @@ class TalksComponent extends Container {
       <section class="talk">
         <h2>
           ${talk.title}
-          <button
-            @click=${() => Service.get().deleteTalk({ title: talk.title })}
-          >
-            Delete
-          </button>
+          <button @click=${() => this.#deleteTalk(talk.title)}>Delete</button>
         </h2>
         <div>by <strong>${talk.presenter}</strong></div>
         <p>${talk.summary}</p>
@@ -76,12 +71,15 @@ class TalksComponent extends Container {
     return form.checkValidity();
   }
 
+  #deleteTalk(title) {
+    this.store.dispatch(actions.deleteTalk(title));
+  }
+
   #addComment(form) {
     const formData = new FormData(form);
-    Service.get().addComment({
-      title: formData.get('talkTitle'),
-      message: formData.get('comment'),
-    });
+    this.store.dispatch(
+      actions.addComment(formData.get('talkTitle'), formData.get('comment')),
+    );
     form.reset();
   }
 }

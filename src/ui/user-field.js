@@ -1,20 +1,14 @@
 // Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
 
 import { html } from 'lit-html';
-
 import { Container } from '@muspellheim/shared/browser';
 
-import { Service } from '../application/service.js';
+import * as actions from '../domain/actions.js';
 
 class UserFieldComponent extends Container {
   constructor() {
     super();
     this.state = '';
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
-    Service.get().loadUser();
   }
 
   extractState(state) {
@@ -32,12 +26,15 @@ class UserFieldComponent extends Container {
             name="username"
             autocomplete="username"
             .value="${this.state}"
-            @change=${(e) =>
-              Service.get().changeUser({ username: e.target.value })}
+            @change=${(e) => this.#changeUser(e.target.value)}
           />
         </li>
       </ul>
     `;
+  }
+
+  #changeUser(username) {
+    this.store.dispatch(actions.changeUser(username));
   }
 }
 

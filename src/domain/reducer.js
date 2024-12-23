@@ -1,15 +1,17 @@
 // Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
 
-export const initialState = {
+import { TALKS_UPDATED_ACTION, USER_CHANGED_ACTION } from './action-types.js';
+
+const initialState = {
   talks: [],
   user: 'Anon',
 };
 
 export function reducer(state = initialState, action) {
   switch (action.type) {
-    case 'change-user':
+    case USER_CHANGED_ACTION:
       return { ...state, user: action.username };
-    case 'talks-updated':
+    case TALKS_UPDATED_ACTION:
       return { ...state, talks: action.talks };
     default:
       return state;

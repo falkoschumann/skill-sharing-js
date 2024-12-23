@@ -1,10 +1,10 @@
 // Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
 
 import { html } from 'lit-html';
+import { Container } from '@muspellheim/shared/browser';
 
-import { Component, Container } from '@muspellheim/shared/browser';
-
-import { Service } from '../application/service.js';
+import { store } from '../application/store.js';
+import * as actions from '../domain/actions.js';
 import './reset.css';
 import './style.css';
 import './skill-sharing.css';
@@ -12,15 +12,15 @@ import './talk-form.js';
 import './talks.js';
 import './user-field.js';
 
-class SkillSharingComponent extends Component {
+class SkillSharingComponent extends Container {
   constructor() {
     super();
-    Container.initStore(Service.get().store);
+    Container.initStore(store);
   }
 
   connectedCallback() {
     super.connectedCallback();
-    Service.get().connectTalks();
+    this.store.dispatch(actions.start());
   }
 
   getView() {
