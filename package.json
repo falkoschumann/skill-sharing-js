@@ -22,7 +22,7 @@
     "express": "4.21.2",
     "lit-html": "3.2.1",
     "redux": "5.0.1",
-    "vite": "6.0.3"
+    "vite": "6.0.5"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "28.0.2",
