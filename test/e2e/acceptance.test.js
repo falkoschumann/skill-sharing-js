@@ -52,6 +52,7 @@ async function startAndStop(run) {
   );
   await fs.rm(fileName, { force: true });
   const screenshotsDir = path.join(import.meta.dirname, '../../screenshots');
+  await fs.rm(screenshotsDir, { recursive: true, force: true });
   await fs.mkdir(screenshotsDir, { recursive: true });
 
   const configuration = SkillSharingConfiguration.create({
@@ -125,26 +126,26 @@ class SkillSharing {
 
   async commentOnTalk({ comment }) {
     const commentInput = await this.#page.waitForSelector(
-      's-talks input[name="comment"]',
+      's-comments input[name="comment"]',
     );
     await commentInput.type(comment);
 
     const submitButton = await this.#page.waitForSelector(
-      's-talks button[type="submit"]',
+      's-comments button[type="submit"]',
     );
     await submitButton.click();
   }
 
   async verifyTalkAdded({ title, summary }) {
     const lastTalkTitle = await this.#page.waitForSelector(
-      's-talks section.talk:last-child h2',
+      's-talks > section:last-child h2',
     );
     expect(await lastTalkTitle.evaluate((node) => node.textContent)).toContain(
       title,
     );
 
     const lastTalkSummary = await this.#page.waitForSelector(
-      's-talks section.talk:last-child p',
+      's-talks > section:last-child p',
     );
     expect(
       await lastTalkSummary.evaluate((node) => node.textContent),
@@ -153,7 +154,7 @@ class SkillSharing {
 
   async verifyCommentAdded({ author, comment }) {
     const lastTalksCommentElement = await this.#page.waitForSelector(
-      's-talks section.talk:last-child .comment:last-child',
+      's-talks > section:last-child s-comments li:last-child',
     );
     const lastTalksComment = await lastTalksCommentElement.evaluate(
       (node) => node.textContent,
