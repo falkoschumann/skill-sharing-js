@@ -4,7 +4,6 @@ import { html } from 'lit-html';
 import { Container } from '@muspellheim/shared/browser';
 
 import * as actions from '../domain/actions.js';
-import './talks.css';
 
 class TalksComponent extends Container {
   extractState(state) {
@@ -17,40 +16,39 @@ class TalksComponent extends Container {
 
   #talkTemplate(talk) {
     return html`
-      <section class="talk">
+      <section class="talk mb-4">
         <h2>
           ${talk.title}
-          <button @click=${() => this.#deleteTalk(talk.title)}>Delete</button>
+          <button class="btn btn-secondary btn-sm"
+                  @click=${() => this.#deleteTalk(talk.title)}>Delete
+          </button>
         </h2>
         <div>by <strong>${talk.presenter}</strong></div>
         <p>${talk.summary}</p>
+        <!-- TODO Extract Comments component -->
         ${this.#commentsTemplate(talk.comments)}
         <form @submit=${(e) => this.#formSubmitted(e)} class="form">
-          <ul>
-            <li>
-              <input
-                type="text"
-                hidden
-                name="talkTitle"
-                value="${talk.title}"
-              />
-              <input type="text" required name="comment" />
-            </li>
-            <li>
-              <button type="submit">Add comment</button>
-            </li>
-          </ul>
-        </form>
+          <div class="mb-3">
+            <input
+              type="text"
+              hidden
+              name="talkTitle"
+              value="${talk.title}"
+            />
+            <input type="text" required name="comment" class="form-control" />
+          </div>
+          <button type="submit" class="btn btn-primary">Add comment
+          </button>
       </section>
     `;
   }
 
   #commentsTemplate(comments) {
     return html`
-      <ul class="comments">
+      <ul class="list-group mb-3">
         ${comments.map(
           (comment) => html`
-            <li class="comment">
+            <li class="comment list-group-item">
               <strong>${comment.author}</strong>: ${comment.message}
             </li>
           `,

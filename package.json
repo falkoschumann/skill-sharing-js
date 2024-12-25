@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@muspellheim/shared": "0.6.0",
+    "bootstrap": "5.3.3",
     "express": "4.21.2",
     "lit-html": "3.2.1",
     "redux": "5.0.1",
@@ -40,6 +41,7 @@
     "prettier": "3.4.2",
     "puppeteer": "23.11.1",
     "rollup": "4.29.1",
+    "sass": "1.83.0",
     "supertest": "7.0.0",
     "vitest": "2.1.8"
   },

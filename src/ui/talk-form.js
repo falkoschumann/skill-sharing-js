@@ -10,29 +10,35 @@ class TalkFormComponent extends Container {
     return html`
       <form @submit=${(e) => this.#formSubmitted(e)}>
         <h3>Submit a Talk</h3>
-        <ul class="form">
-          <li>
-            <label for="title">Title:</label>
-            <input type="text" required id="title" name="title" />
-          </li>
-          <li>
-            <label for="summary">Summary:</label>
-            <textarea
-              rows="6"
-              cols="30"
-              required
-              id="summary"
-              name="summary"
-            ></textarea>
-          </li>
-          <li>
-            <button type="submit">Submit</button>
-          </li>
-        </ul>
+        <div class="mb-3">
+          <label for="title" class="form-label">Title:</label>
+          <input
+            type="text"
+            required
+            id="title"
+            name="title"
+            class="form-control"
+          />
+        </div>
+        <div class="mb-3">
+          <label for="summary" class="form-label">Summary:</label>
+          <textarea
+            rows="6"
+            cols="30"
+            required
+            id="summary"
+            name="summary"
+            class="form-control"
+          ></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
       </form>
     `;
   }
 
+  /**
+   * @param {SubmitEvent} event
+   */
   #formSubmitted(event) {
     event.preventDefault();
     if (this.#validateForm(event.target)) {
@@ -40,11 +46,18 @@ class TalkFormComponent extends Container {
     }
   }
 
+  /**
+   * @param {HTMLFormElement} form
+   * @returns {boolean}
+   */
   #validateForm(form) {
     form.reportValidity();
     return form.checkValidity();
   }
 
+  /**
+   * @param {HTMLFormElement} form
+   */
   #submitTalk(form) {
     const formData = new FormData(form);
     this.store.dispatch(

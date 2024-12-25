@@ -8,6 +8,7 @@ import * as actions from '../domain/actions.js';
 class UserFieldComponent extends Container {
   constructor() {
     super();
+    this.className = 'd-block mb-4';
     this.state = '';
   }
 
@@ -17,24 +18,26 @@ class UserFieldComponent extends Container {
 
   getView() {
     return html`
-      <ul class="form">
-        <li>
-          <label for="username">Your name:</label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            autocomplete="username"
-            .value="${this.state}"
-            @change=${(e) => this.#changeUser(e.target.value)}
-          />
-        </li>
-      </ul>
+      <div class="mb-3">
+        <label for="username" class="form-label">Your name</label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          autocomplete="username"
+          class="form-control"
+          .value="${this.state}"
+          @change=${(e) => this.#changeUser(e)}
+        />
+      </div>
     `;
   }
 
-  #changeUser(username) {
-    this.store.dispatch(actions.changeUser(username));
+  /**
+   * @param {InputEvent} event
+   */
+  #changeUser(event) {
+    this.store.dispatch(actions.changeUser(event.target.value));
   }
 }
 
