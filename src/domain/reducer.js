@@ -10,9 +10,9 @@ const initialState = {
 export function reducer(state = initialState, action) {
   switch (action.type) {
     case USER_CHANGED_ACTION:
-      return { ...state, user: action.username };
+      return { ...state, user: action.payload.username };
     case TALKS_UPDATED_ACTION:
-      return { ...state, talks: action.talks };
+      return { ...state, talks: action.payload.talks };
     default:
       return state;
   }

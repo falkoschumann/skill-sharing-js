@@ -28,25 +28,28 @@ export function createApiMiddleware(api = Api.create()) {
         }
         case SUBMIT_TALK_ACTION: {
           const presenter = getState().user;
+          const { title, summary } = action.payload;
           const command = SubmitTalkCommand.create({
-            title: action.title,
+            title,
             presenter,
-            summary: action.summary,
+            summary,
           });
           api.submitTalk(command);
           break;
         }
         case ADD_COMMENT_ACTION: {
           const author = getState().user;
+          const { title, message } = action.payload;
           const command = AddCommentCommand.create({
-            title: action.title,
-            comment: Comment.create({ author, message: action.message }),
+            title,
+            comment: Comment.create({ author, message }),
           });
           api.addComment(command);
           break;
         }
         case DELETE_TALK_ACTION: {
-          const command = DeleteTalkCommand.create({ title: action.title });
+          const { title } = action.payload;
+          const command = DeleteTalkCommand.create({ title });
           api.deleteTalk(command);
           break;
         }

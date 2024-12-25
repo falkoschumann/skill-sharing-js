@@ -14,11 +14,13 @@ export function createRepositoryMiddleware(repository = Repository.create()) {
               dispatch(actions.userChanged(user?.username ?? 'Anon')),
             );
           break;
-        case CHANGE_USER_ACTION:
+        case CHANGE_USER_ACTION: {
+          const { username } = action.payload;
           repository
-            .store(User.create({ username: action.username }))
-            .then(() => dispatch(actions.userChanged(action.username)));
+            .store(User.create({ username }))
+            .then(() => dispatch(actions.userChanged(username)));
           break;
+        }
       }
       return next(action);
     };

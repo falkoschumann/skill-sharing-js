@@ -4,8 +4,7 @@
  * @typedef {import('../../shared/talks.js').Talk} Talk
  */
 
-// TODO Use https://github.com/redux-utilities/flux-standard-action
-//  {type: string, payload: any, error: boolean, meta: any}
+// See https://github.com/redux-utilities/flux-standard-action
 
 import {
   ADD_COMMENT_ACTION,
@@ -26,50 +25,50 @@ export function start() {
 
 /**
  * @param {string} username
- * @returns {{type: string, username: string}}
+ * @returns {{type: string, payload: {username: string}}}
  */
 export function changeUser(username) {
-  return { type: CHANGE_USER_ACTION, username };
+  return { type: CHANGE_USER_ACTION, payload: { username } };
 }
 
 /**
  * @param {string} username
- * @returns {{type: string, username: string}}
+ * @returns {{type: string, payload: {username: string}}}
  */
 export function userChanged(username) {
-  return { type: USER_CHANGED_ACTION, username };
+  return { type: USER_CHANGED_ACTION, payload: { username } };
 }
 
 /**
  * @param {string} title
  * @param {string} summary
- * @returns {{type: string, title: string, summary: string}}
+ * @returns {{type: string, payload: {title: string, summary: string}}}
  */
 export function submitTalk(title, summary) {
-  return { type: SUBMIT_TALK_ACTION, title, summary };
+  return { type: SUBMIT_TALK_ACTION, payload: { title, summary } };
 }
 
 /**
  * @param {string} title
  * @param {string} message
- * @returns {{type: string, title: string, message: string}}
+ * @returns {{type: string, payload: {title: string, message: string}}}
  */
 export function addComment(title, message) {
-  return { type: ADD_COMMENT_ACTION, title, message };
+  return { type: ADD_COMMENT_ACTION, payload: { title, message } };
 }
 
 /**
  * @param {string} title
- * @returns {{type: string, title: string}}
+ * @returns {{type: string, payload: {title: string}}}
  */
 export function deleteTalk(title) {
-  return { type: DELETE_TALK_ACTION, title };
+  return { type: DELETE_TALK_ACTION, payload: { title } };
 }
 
 /**
  * @param {Talk[]} talks
- * @returns {{type: string, talks: Talk[]}}
+ * @returns {{type: string, payload: {talks: Talk[]}}}
  */
 export function talksUpdated(talks) {
-  return { type: TALKS_UPDATED_ACTION, talks };
+  return { type: TALKS_UPDATED_ACTION, payload: { talks } };
 }
