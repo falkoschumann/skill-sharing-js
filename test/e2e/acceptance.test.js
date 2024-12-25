@@ -42,6 +42,8 @@ describe('User Acceptance Tests', () => {
   });
 });
 
+const server = ServerConfiguration.create({ address: 'localhost', port: 4444 });
+
 /**
  * @param {function(Browser): Promise<void>} run
  */
@@ -56,7 +58,7 @@ async function startAndStop(run) {
   await fs.mkdir(screenshotsDir, { recursive: true });
 
   const configuration = SkillSharingConfiguration.create({
-    server: ServerConfiguration.create({ address: 'localhost', port: 4444 }),
+    server,
     repository: RepositoryConfiguration.create({ fileName }),
   });
 
@@ -95,8 +97,7 @@ class SkillSharing {
 
   async gotoSubmission() {
     this.#page = await this.#browser.newPage();
-    // TODO Use port from configuration
-    await this.#page.goto('http://localhost:4444');
+    await this.#page.goto(`http://${server.address}:${server.port}`);
   }
 
   async changeUser({ name }) {
