@@ -18,7 +18,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@muspellheim/shared": "0.6.0",
+    "@muspellheim/shared": "0.6.1",
     "bootstrap": "5.3.3",
     "express": "4.21.2",
     "lit-html": "3.2.1",
