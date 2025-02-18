@@ -41,7 +41,7 @@
     "prettier": "3.5.1",
     "puppeteer": "24.2.1",
     "rollup": "4.34.8",
-    "sass": "1.84.0",
+    "sass": "1.85.0",
     "supertest": "7.0.0",
     "vitest": "3.0.5"
   },
