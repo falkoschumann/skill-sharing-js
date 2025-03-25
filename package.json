@@ -42,7 +42,7 @@
     "puppeteer": "24.4.0",
     "rollup": "4.37.0",
     "sass": "1.86.0",
-    "supertest": "7.0.0",
+    "supertest": "7.1.0",
     "vitest": "3.0.9"
   },
   "bin": "build/index.js",
