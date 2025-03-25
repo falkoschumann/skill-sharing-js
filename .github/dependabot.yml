@@ -16,5 +16,5 @@ updates:
     groups:
       vitest:
         patterns:
-          - "vitest"
-          - "@vitest/*"
+          - 'vitest'
+          - '@vitest/*'
