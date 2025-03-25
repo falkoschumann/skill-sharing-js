@@ -33,7 +33,7 @@
     "@types/supertest": "6.0.2",
     "@vitest/coverage-v8": "3.0.9",
     "eslint": "9.23.0",
-    "eslint-plugin-lit": "1.15.0",
+    "eslint-plugin-lit": "2.0.0",
     "eslint-plugin-wc": "2.2.1",
     "eventsource": "3.0.5",
     "jsdom": "26.0.0",
