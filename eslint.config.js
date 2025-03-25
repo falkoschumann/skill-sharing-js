@@ -1,7 +1,7 @@
 import globals from 'globals';
 import js from '@eslint/js';
-import lit from 'eslint-plugin-lit';
-import wc from 'eslint-plugin-wc';
+import * as lit from 'eslint-plugin-lit';
+import * as wc from 'eslint-plugin-wc';
 
 /** @type { import("eslint").Linter.Config[] } */
 export default [
