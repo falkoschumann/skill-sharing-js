@@ -20,7 +20,7 @@
   "dependencies": {
     "@muspellheim/shared": "0.6.1",
     "bootstrap": "5.3.3",
-    "express": "4.21.2",
+    "express": "5.1.0",
     "lit-html": "3.2.1",
     "redux": "5.0.1",
     "vite": "6.2.4"
