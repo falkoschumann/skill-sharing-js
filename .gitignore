@@ -1,14 +1,21 @@
 # see also https://gitignore.io
 
+# Project
 /data/
 /screenshots/
 /testdata/
+
+# Build
 dist/
 tmp/
+vendor/
 
 # Gradle
 .gradle/
 build/
+
+# Maven
+target/
 
 # Node
 coverage/

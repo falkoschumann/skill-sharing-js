@@ -3,7 +3,7 @@
 import events from "node:events";
 import { describe, expect, it } from "vitest";
 
-import { SseEmitter } from "../../lib/node/sse-emitter.js";
+import { SseEmitter } from "../../../src/infrastructure/sse-emitter.js";
 
 describe("SSE emitter", () => {
   it("extends response", () => {

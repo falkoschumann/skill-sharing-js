@@ -1,34 +1,34 @@
-// Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
+// Copyright (c) 2025 Falko Schumann. All rights reserved. MIT license.
 
-import fs from 'node:fs/promises';
-import path from 'node:path';
+import fs from "node:fs/promises";
+import path from "node:path";
 //import EventSource from 'eventsource';
-import request from 'supertest';
-import { describe, expect, it } from 'vitest';
-import { CommandStatus } from '@muspellheim/shared';
+import request from "supertest";
+import { describe, expect, it } from "vitest";
 
 import {
   AddCommentCommand,
+  CommandStatus,
   DeleteTalkCommand,
   SubmitTalkCommand,
   TalksQuery,
   TalksQueryResult,
-} from '../../../shared/messages.js';
-import { Comment, Talk } from '../../../shared/talks.js';
+} from "../../../shared/messages.js";
+import { Comment, Talk } from "../../../shared/talks.js";
 import {
   ServerConfiguration,
   SkillSharingApplication,
   SkillSharingConfiguration,
-} from '../../../api/ui/application.js';
-import { RepositoryConfiguration } from '../../../api/infrastructure/repository.js';
+} from "../../../src/ui/application.js";
+import { RepositoryConfiguration } from "../../../src/infrastructure/repository.js";
 
-describe('Application', () => {
-  it('Starts and stops the app', async () => {
+describe("Application", () => {
+  it("Starts and stops the app", async () => {
     await startAndStop(async () => {});
   });
 
-  describe('Submit talk', () => {
-    it('Adds talk to list', async () => {
+  describe("Submit talk", () => {
+    it("Adds talk to list", async () => {
       await startAndStop(async ({ client }) => {
         const status = await client.submitTalk(
           SubmitTalkCommand.createTestInstance(),
@@ -40,14 +40,14 @@ describe('Application', () => {
       });
     });
 
-    it('Reports an error when talk could not add', async () => {
+    it("Reports an error when talk could not add", async () => {
       await startAndStop(async ({ client }) => {
         const status = await client.submitTalk(
           SubmitTalkCommand.createTestInstance({ presenter: null }),
         );
 
         expect(status).toEqual(
-          CommandStatus.failure('Bad submit talk command.'),
+          CommandStatus.failure("Bad submit talk command."),
         );
         const result = await client.getTalks();
         expect(result).toEqual(TalksQueryResult.create());
@@ -55,8 +55,8 @@ describe('Application', () => {
     });
   });
 
-  describe('Add comment', () => {
-    it('Adds comment to an existing talk', async () => {
+  describe("Add comment", () => {
+    it("Adds comment to an existing talk", async () => {
       await startAndStop(async ({ client }) => {
         await client.submitTalk(SubmitTalkCommand.createTestInstance());
 
@@ -72,13 +72,13 @@ describe('Application', () => {
       });
     });
 
-    it('Reports an error when talk does not exists', async () => {
+    it("Reports an error when talk does not exists", async () => {
       await startAndStop(async ({ client }) => {
         await client.submitTalk(SubmitTalkCommand.createTestInstance());
 
         const status = await client.addComment(
           AddCommentCommand.createTestInstance({
-            title: 'Non existing talk',
+            title: "Non existing talk",
           }),
         );
 
@@ -90,7 +90,7 @@ describe('Application', () => {
       });
     });
 
-    it('Reports an error when comment could not add', async () => {
+    it("Reports an error when comment could not add", async () => {
       await startAndStop(async ({ client }) => {
         await client.submitTalk(SubmitTalkCommand.createTestInstance());
 
@@ -101,14 +101,14 @@ describe('Application', () => {
         );
 
         expect(status).toEqual(
-          CommandStatus.failure('Bad add comment command.'),
+          CommandStatus.failure("Bad add comment command."),
         );
       });
     });
   });
 
-  describe('Delete talk', () => {
-    it('Deletes an existing talk', async () => {
+  describe("Delete talk", () => {
+    it("Deletes an existing talk", async () => {
       await startAndStop(async ({ client }) => {
         await client.submitTalk(SubmitTalkCommand.createTestInstance());
 
@@ -120,11 +120,11 @@ describe('Application', () => {
       });
     });
 
-    it('Reports no error when talk does not exist', async () => {
+    it("Reports no error when talk does not exist", async () => {
       await startAndStop(async ({ client }) => {
         const status = await client.deleteTalk(
           DeleteTalkCommand.createTestInstance({
-            title: 'non-existing-talk',
+            title: "non-existing-talk",
           }),
         );
 
@@ -133,17 +133,17 @@ describe('Application', () => {
     });
   });
 
-  describe('Talks', () => {
-    it('Returns all talks', async () => {
+  describe("Talks", () => {
+    it("Returns all talks", async () => {
       await startAndStop(async ({ client }) => {
         await client.submitTalk(
-          SubmitTalkCommand.createTestInstance({ title: 'Foo' }),
+          SubmitTalkCommand.createTestInstance({ title: "Foo" }),
         );
         await client.addComment(
-          AddCommentCommand.createTestInstance({ title: 'Foo' }),
+          AddCommentCommand.createTestInstance({ title: "Foo" }),
         );
         await client.submitTalk(
-          SubmitTalkCommand.createTestInstance({ title: 'Bar' }),
+          SubmitTalkCommand.createTestInstance({ title: "Bar" }),
         );
 
         const result = await client.getTalks();
@@ -151,15 +151,15 @@ describe('Application', () => {
         expect(result).toEqual(
           TalksQueryResult.createTestInstance({
             talks: [
-              Talk.createTestInstanceWithComment({ title: 'Foo' }),
-              Talk.createTestInstance({ title: 'Bar' }),
+              Talk.createTestInstanceWithComment({ title: "Foo" }),
+              Talk.createTestInstance({ title: "Bar" }),
             ],
           }),
         );
       });
     });
 
-    it('Returns a single talk when client asks for a specific talk', async () => {
+    it("Returns a single talk when client asks for a specific talk", async () => {
       await startAndStop(async ({ client }) => {
         await client.submitTalk(SubmitTalkCommand.createTestInstance());
 
@@ -169,12 +169,12 @@ describe('Application', () => {
       });
     });
 
-    it('Returns no talk when client asks for a specific talk that does not exist', async () => {
+    it("Returns no talk when client asks for a specific talk that does not exist", async () => {
       await startAndStop(async ({ client }) => {
         await client.submitTalk(SubmitTalkCommand.createTestInstance());
 
         const result = await client.getTalks(
-          TalksQuery.create({ title: 'Non existing talk' }),
+          TalksQuery.create({ title: "Non existing talk" }),
         );
 
         expect(result).toEqual(TalksQueryResult.create());
@@ -182,66 +182,66 @@ describe('Application', () => {
     });
   });
 
-  describe('Long polling', () => {
-    it('Replies with talks when client asks for the first time', async () => {
+  describe("Long polling", () => {
+    it("Replies with talks when client asks for the first time", async () => {
       await startAndStop(async ({ url }) => {
         await submitTalk(url);
 
         const response = await request(url)
-          .get('/api/talks')
-          .set('Accept', 'application/json');
+          .get("/api/talks")
+          .set("Accept", "application/json");
 
         expect(response.status).toEqual(200);
-        expect(response.get('Content-Type')).toMatch(/application\/json/);
-        expect(response.get('Cache-Control')).toEqual('no-store');
-        expect(response.get('ETag')).toEqual('"1"');
+        expect(response.get("Content-Type")).toMatch(/application\/json/);
+        expect(response.get("Cache-Control")).toEqual("no-store");
+        expect(response.get("ETag")).toEqual('"1"');
         expect(response.body).toEqual([Talk.createTestInstance()]);
       });
     });
 
-    it('Replies with talks when client is not up to date', async () => {
+    it("Replies with talks when client is not up to date", async () => {
       await startAndStop(async ({ url }) => {
         await submitTalk(url);
 
         const response = await request(url)
-          .get('/api/talks')
-          .set('Accept', 'application/json')
-          .set('If-None-Match', '"0"');
+          .get("/api/talks")
+          .set("Accept", "application/json")
+          .set("If-None-Match", '"0"');
 
         expect(response.status).toEqual(200);
-        expect(response.get('Content-Type')).toMatch(/application\/json/);
-        expect(response.get('Cache-Control')).toEqual('no-store');
-        expect(response.get('ETag')).toEqual('"1"');
+        expect(response.get("Content-Type")).toMatch(/application\/json/);
+        expect(response.get("Cache-Control")).toEqual("no-store");
+        expect(response.get("ETag")).toEqual('"1"');
         expect(response.body).toEqual([Talk.createTestInstance()]);
       });
     });
 
-    it('Reports not modified when client is up to date', async () => {
+    it("Reports not modified when client is up to date", async () => {
       await startAndStop(async ({ url }) => {
         await submitTalk(url);
 
         const response = await request(url)
-          .get('/api/talks')
-          .set('Accept', 'application/json')
-          .set('If-None-Match', '"1"');
+          .get("/api/talks")
+          .set("Accept", "application/json")
+          .set("If-None-Match", '"1"');
 
         expect(response.status).toEqual(304);
       });
     });
 
-    it('Reports not modified when long polling results in a timeout', async () => {
+    it("Reports not modified when long polling results in a timeout", async () => {
       await startAndStop(async ({ url }) => {
         const responsePromise = request(url)
-          .get('/api/talks')
-          .set('Accept', 'application/json')
-          .set('Prefer', 'wait=1')
-          .set('If-None-Match', '"0"');
+          .get("/api/talks")
+          .set("Accept", "application/json")
+          .set("Prefer", "wait=1")
+          .set("If-None-Match", '"0"');
         const submitHandler = setTimeout(
           () =>
             request(url)
-              .put('/api/talks/Foobar')
-              .set('Content-Type', 'application/json')
-              .send({ presenter: 'Anon', summary: 'Lorem ipsum' }),
+              .put("/api/talks/Foobar")
+              .set("Content-Type", "application/json")
+              .send({ presenter: "Anon", summary: "Lorem ipsum" }),
           2000,
         );
         const response = await responsePromise;
@@ -251,39 +251,39 @@ describe('Application', () => {
       });
     });
 
-    it('Replies talks when a talk was submitted while long polling', async () => {
+    it("Replies talks when a talk was submitted while long polling", async () => {
       await startAndStop(async ({ url }) => {
         const timeoutId = setTimeout(() => submitTalk(url), 500);
         const response = await request(url)
-          .get('/api/talks')
-          .set('Accept', 'application/json')
-          .set('Prefer', 'wait=1')
-          .set('If-None-Match', '"0"');
+          .get("/api/talks")
+          .set("Accept", "application/json")
+          .set("Prefer", "wait=1")
+          .set("If-None-Match", '"0"');
         clearTimeout(timeoutId);
 
         expect(response.status).toEqual(200);
-        expect(response.get('Content-Type')).toMatch(/application\/json/);
-        expect(response.get('Cache-Control')).toEqual('no-store');
-        expect(response.get('ETag')).toEqual('"1"');
+        expect(response.get("Content-Type")).toMatch(/application\/json/);
+        expect(response.get("Cache-Control")).toEqual("no-store");
+        expect(response.get("ETag")).toEqual('"1"');
         expect(response.body).toEqual([Talk.createTestInstance()]);
       });
     });
   });
 
-  describe('Receive talk updates', () => {
-    it.skip('Receives talk updates', async () => {
+  describe("Receive talk updates", () => {
+    it("Receives talk updates", async () => {
       await startAndStop(async ({ url, source }) => {
         await submitTalk(url);
 
         // FIXME Submitted talk is not written to disk when the event is sent
         const talks = await new Promise((resolve) => {
-          source.addEventListener('message', (event) => {
+          source.addEventListener("message", (event) => {
             resolve(JSON.parse(event.data));
           });
         });
 
         expect(talks).toEqual([
-          { title: 'Foobar', presenter: 'Anon', summary: 'Lorem ipsum' },
+          { title: "Foobar", presenter: "Anon", summary: "Lorem ipsum" },
         ]);
       });
     });
@@ -296,11 +296,11 @@ describe('Application', () => {
 async function startAndStop(run) {
   const fileName = path.join(
     import.meta.dirname,
-    '../../../testdata/server.e2e.application.json',
+    "../../../testdata/server.e2e.application.json",
   );
   await fs.rm(fileName, { force: true });
 
-  const address = 'localhost';
+  const address = "localhost";
   const port = 3333;
   const configuration = SkillSharingConfiguration.create({
     server: ServerConfiguration.create({ address, port }),
@@ -340,7 +340,7 @@ class ServiceClient {
   async submitTalk(command) {
     const response = await request(this.#url)
       .put(`/api/talks/${encodeURIComponent(command.title)}`)
-      .set('Content-Type', 'application/json')
+      .set("Content-Type", "application/json")
       .send({ presenter: command.presenter, summary: command.summary });
     if (response.noContent) {
       return CommandStatus.success();
@@ -354,7 +354,7 @@ class ServiceClient {
   async addComment(command) {
     const response = await request(this.#url)
       .post(`/api/talks/${encodeURIComponent(command.title)}/comments`)
-      .set('Content-Type', 'application/json')
+      .set("Content-Type", "application/json")
       .send(command.comment);
     if (response.noContent) {
       return CommandStatus.success();
@@ -382,7 +382,7 @@ class ServiceClient {
     if (query?.title != null) {
       const response = await request(this.#url)
         .get(`/api/talks/${encodeURIComponent(query.title)}`)
-        .set('Accept', 'application/json');
+        .set("Accept", "application/json");
       if (response.ok) {
         return TalksQueryResult.create({ talks: [response.body] });
       }
@@ -392,8 +392,8 @@ class ServiceClient {
     }
 
     const response = await request(this.#url)
-      .get('/api/talks')
-      .set('Accept', 'application/json');
+      .get("/api/talks")
+      .set("Accept", "application/json");
     if (response.ok) {
       return TalksQueryResult.create({ talks: response.body });
     }
@@ -405,6 +405,6 @@ class ServiceClient {
 async function submitTalk(url, talk = Talk.createTestInstance()) {
   return await request(url)
     .put(`/api/talks/${encodeURIComponent(talk.title)}`)
-    .set('Content-Type', 'application/json')
+    .set("Content-Type", "application/json")
     .send({ presenter: talk.presenter, summary: talk.summary });
 }

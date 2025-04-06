@@ -1,10 +1,10 @@
-// Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
+// Copyright (c) 2025 Falko Schumann. All rights reserved. MIT license.
 
 import { html } from 'lit-html';
 import { Component } from './components.js';
 
 /**
- * @typedef {import('../../shared/talks.js').Talk} Talk
+ * @typedef {import('../../../shared/talks.js').Talk} Talk
  */
 import { store } from '../application/store.js';
 import * as actions from '../domain/actions.js';

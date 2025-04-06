@@ -1,11 +1,11 @@
-// Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
+// Copyright (c) 2025 Falko Schumann. All rights reserved. MIT license.
 
 /* @vitest-environment jsdom */
 
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { Repository } from '../../../src/infrastructure/repository.js';
-import { User } from '../../../src/domain/users.js';
+import { Repository } from '../../../public/js/infrastructure/repository.js';
+import { User } from '../../../public/js/domain/users.js';
 
 describe('Repository', () => {
   beforeEach(() => {

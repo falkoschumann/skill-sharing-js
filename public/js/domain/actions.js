@@ -1,7 +1,7 @@
-// Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
+// Copyright (c) 2025 Falko Schumann. All rights reserved. MIT license.
 
 /**
- * @typedef {import('../../shared/talks.js').Talk} Talk
+ * @typedef {import('../../../shared/talks.js').Talk} Talk
  */
 
 // See https://github.com/redux-utilities/flux-standard-action

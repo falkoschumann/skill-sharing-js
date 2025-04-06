@@ -1,15 +1,15 @@
-// Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
+// Copyright (c) 2025 Falko Schumann. All rights reserved. MIT license.
 
 /**
- * @typedef {import('node:http').Server} http.Server
+ * @typedef {import("node:http").Server} http.Server
  */
 
-import express from 'express';
+import express from "express";
 
-import { Service } from '../application/service.js';
-import { RepositoryConfiguration } from '../infrastructure/repository.js';
-import { TalksController } from './talks-controller.js';
-import { StaticFilesController } from './static-files-controller.js';
+import { Service } from "../application/service.js";
+import { RepositoryConfiguration } from "../infrastructure/repository.js";
+import { TalksController } from "./talks-controller.js";
+import { StaticFilesController } from "./static-files-controller.js";
 
 export class SkillSharingConfiguration {
   /**
@@ -41,7 +41,7 @@ export class ServerConfiguration {
   /**
    * @param {Partial<ServerConfiguration>} [configuration]
    */
-  static create({ address = 'localhost', port = 3000 } = {}) {
+  static create({ address = "localhost", port = 8080 } = {}) {
     return new ServerConfiguration(address, port);
   }
 
@@ -81,15 +81,15 @@ export class SkillSharingApplication {
     this.#configuration = configuration;
 
     this.#app = express();
-    this.#app.set('x-powered-by', false);
+    this.#app.set("x-powered-by", false);
     this.#app.use(express.json());
-    new StaticFilesController(this.#app, './dist');
+    new StaticFilesController(this.#app, "./dist");
     new TalksController(this.#app, service);
   }
 
   async start() {
     // TODO Use logger instead of console
-    console.info('Starting server...');
+    console.info("Starting server...");
     await new Promise((resolve) => {
       this.#server = this.#app.listen(
         this.#configuration.port,
@@ -103,11 +103,11 @@ export class SkillSharingApplication {
   }
 
   async stop() {
-    console.info('Stopping server...');
+    console.info("Stopping server...");
     await new Promise((resolve) => {
-      this.#server.on('close', () => resolve());
+      this.#server.on("close", () => resolve());
       this.#server.close();
     });
-    console.info('Server stopped.');
+    console.info("Server stopped.");
   }
 }

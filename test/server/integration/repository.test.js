@@ -1,11 +1,11 @@
-// Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
+// Copyright (c) 2025 Falko Schumann. All rights reserved. MIT license.
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { Talk } from '../../../shared/talks.js';
-import { Repository } from '../../../api/infrastructure/repository.js';
+import { Repository } from '../../../src/infrastructure/repository.js';
 
 const testFile = path.join(
   import.meta.dirname,

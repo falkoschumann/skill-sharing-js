@@ -1,26 +1,25 @@
-// Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
+// Copyright (c) 2025 Falko Schumann. All rights reserved. MIT license.
 
-import { describe, expect, it } from 'vitest';
-import { legacy_createStore as createStore, applyMiddleware } from 'redux';
-
-import { Talk } from '../../../shared/talks.js';
-import { createApiMiddleware } from '../../../src/application/api-middleware.js';
-import { createRepositoryMiddleware } from '../../../src/application/repository-middleware.js';
-import * as actions from '../../../src/domain/actions.js';
-import { reducer } from '../../../src/domain/reducer.js';
-import { User } from '../../../src/domain/users.js';
+import { describe, expect, it } from "vitest";
+//import { applyMiddleware, legacy_createStore as createStore } from 'redux';
+import { Talk } from "../../../shared/talks.js";
+import { createApiMiddleware } from "../../../public/js/application/api-middleware.js";
+import { createRepositoryMiddleware } from "../../../public/js/application/repository-middleware.js";
+import * as actions from "../../../public/js/domain/actions.js";
+import { reducer } from "../../../public/js/domain/reducer.js";
+import { User } from "../../../public/js/domain/users.js";
 import {
   Api,
   COMMENT_ADDED_EVENT,
   TALK_DELETED_EVENT,
   TALK_SUBMITTED_EVENT,
   TalksUpdatedEvent,
-} from '../../../src/infrastructure/api.js';
-import { Repository } from '../../../src/infrastructure/repository.js';
+} from "../../../public/js/infrastructure/api.js";
+import { Repository } from "../../../public/js/infrastructure/repository.js";
 
-describe('Store', () => {
-  describe('Change user', () => {
-    it('Updates user name', async () => {
+describe("Store", () => {
+  describe("Change user", () => {
+    it("Updates user name", async () => {
       const { store, repository } = configure();
       const result = new Promise((resolve) => store.subscribe(resolve));
 
@@ -34,18 +33,18 @@ describe('Store', () => {
     });
   });
 
-  describe('Load user', () => {
-    it('Anon is the default user', async () => {
+  describe("Load user", () => {
+    it("Anon is the default user", async () => {
       const { store } = configure();
       const result = new Promise((resolve) => store.subscribe(resolve));
 
       store.dispatch(actions.start());
       await result;
 
-      expect(store.getState().user).toEqual('Anon');
+      expect(store.getState().user).toEqual("Anon");
     });
 
-    it('Is stored user', async () => {
+    it("Is stored user", async () => {
       const user = User.createTestInstance();
       const { store } = configure({ user });
       const result = new Promise((resolve) => store.subscribe(resolve));
@@ -57,69 +56,69 @@ describe('Store', () => {
     });
   });
 
-  describe('Submit talk', () => {
-    it('Adds talk to list', async () => {
+  describe("Submit talk", () => {
+    it("Adds talk to list", async () => {
       const { store, api } = configure();
       const talksSubmitted = api.trackTalksSubmitted();
       const result = new Promise((resolve) =>
         api.addEventListener(TALK_SUBMITTED_EVENT, resolve),
       );
 
-      store.dispatch(actions.submitTalk('Foobar', 'Lorem ipsum'));
+      store.dispatch(actions.submitTalk("Foobar", "Lorem ipsum"));
       await result;
 
       expect(talksSubmitted.data).toEqual([
-        { title: 'Foobar', presenter: 'Anon', summary: 'Lorem ipsum' },
+        { title: "Foobar", presenter: "Anon", summary: "Lorem ipsum" },
       ]);
     });
   });
 
-  describe('Adds comment', () => {
-    it('Adds comment to an existing talk', async () => {
+  describe("Adds comment", () => {
+    it("Adds comment to an existing talk", async () => {
       const { store, api } = configure();
       const commentsAdded = api.trackCommentsAdded();
       const result = new Promise((resolve) =>
         api.addEventListener(COMMENT_ADDED_EVENT, resolve),
       );
 
-      store.dispatch(actions.addComment('Foobar', 'Lorem ipsum'));
+      store.dispatch(actions.addComment("Foobar", "Lorem ipsum"));
       await result;
 
       expect(commentsAdded.data).toEqual([
         {
-          title: 'Foobar',
-          comment: { author: 'Anon', message: 'Lorem ipsum' },
+          title: "Foobar",
+          comment: { author: "Anon", message: "Lorem ipsum" },
         },
       ]);
     });
 
-    it.todo('Reports an error when talk does not exists');
+    it.todo("Reports an error when talk does not exists");
   });
 
-  describe('Delete talk', () => {
-    it('Removes talk from list', async () => {
+  describe("Delete talk", () => {
+    it("Removes talk from list", async () => {
       const { store, api } = configure();
       const talksDeleted = api.trackTalksDeleted();
       const result = new Promise((resolve) =>
         api.addEventListener(TALK_DELETED_EVENT, resolve),
       );
 
-      store.dispatch(actions.deleteTalk('Foobar'));
+      store.dispatch(actions.deleteTalk("Foobar"));
       await result;
 
-      expect(talksDeleted.data).toEqual([{ title: 'Foobar' }]);
+      expect(talksDeleted.data).toEqual([{ title: "Foobar" }]);
     });
 
-    it.todo('Ignores already removed talk');
+    it.todo("Ignores already removed talk");
   });
 
-  describe('Talks', () => {
-    it('Lists all talks', async () => {
+  describe("Talks", () => {
+    it("Lists all talks", async () => {
       const talk = Talk.createTestInstance();
       const { store, api } = configure({
         fetchResponse: {
           status: 200,
-          headers: { etag: '1' },
+          headers: { etag: "1" },
           body: JSON.stringify([talk]),
         },
       });

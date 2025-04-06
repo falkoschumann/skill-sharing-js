@@ -1,3 +1,5 @@
+// Copyright (c) 2025 Falko Schumann. All rights reserved. MIT license.
+
 import process from 'node:process';
 import { defineConfig } from 'vite';
 

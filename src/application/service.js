@@ -1,11 +1,11 @@
-// Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
+// Copyright (c) 2025 Falko Schumann. All rights reserved. MIT license.
 
 /**
  * @typedef {import('../../shared/messages.js').AddCommentCommand} AddCommentCommand
  * @typedef {import('../../shared/messages.js').DeleteTalkCommand} DeleteTalkCommand
  * @typedef {import('../../shared/messages.js').SubmitTalkCommand} SubmitTalkCommand
  * @typedef {import('../../shared/messages.js').TalksQuery} TalksQuery
- * @typedef {import('../infrastructure/./repository.js').RepositoryConfiguration} RepositoryConfiguration
+ * @typedef {import('../infrastructure/repository.js').RepositoryConfiguration} RepositoryConfiguration
  */
 
 import { CommandStatus, TalksQueryResult } from '../../shared/messages.js';

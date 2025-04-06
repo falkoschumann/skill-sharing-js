@@ -1,13 +1,13 @@
-// Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
+// Copyright (c) 2025 Falko Schumann. All rights reserved. MIT license.
 
 /**
- * @typedef {import('../../shared/messages.js').AddCommentCommand} AddCommentCommand
- * @typedef {import('../../shared/messages.js').DeleteTalkCommand} DeleteTalkCommand
- * @typedef {import('../../shared/messages.js').SubmitTalkCommand} SubmitTalkCommand
+ * @typedef {import('../../../shared/messages.js').AddCommentCommand} AddCommentCommand
+ * @typedef {import('../../../shared/messages.js').DeleteTalkCommand} DeleteTalkCommand
+ * @typedef {import('../../../shared/messages.js').SubmitTalkCommand} SubmitTalkCommand
  */
 
 import { SseClient } from './sse-client.js';
-import { Talk } from '../../shared/talks.js';
+import { Talk } from '../../../shared/talks.js';
 import { OutputTracker } from '../util/output-tracker.js';
 
 const BASE_URL = '/api/talks';
@@ -142,4 +142,5 @@ export class Api extends EventTarget {
   }
 }
 
-async function fetchStub() {}
+async function fetchStub() {
+}

@@ -6,7 +6,7 @@
 
 import { describe, expect, it } from 'vitest';
 
-import { SseClient } from '../../../src/infrastructure/sse-client.js';
+import { SseClient } from '../../../public/js/infrastructure/sse-client.js';
 
 describe('SSE client', () => {
   it('Creates a client without connection', () => {

@@ -1,3 +1,6 @@
-// Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
+// Copyright (c) 2025 Falko Schumann. All rights reserved. MIT license.
 
-import './ui/skill-sharing.js';
+import { SkillSharingApplication } from './ui/application.js';
+
+const app = SkillSharingApplication.create();
+void app.start();

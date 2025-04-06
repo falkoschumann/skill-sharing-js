@@ -2,7 +2,7 @@
 
 import { describe, expect, it } from 'vitest';
 
-import { OutputTracker } from '../../../src/util/output-tracker.js';
+import { OutputTracker } from '../../../public/js/util/output-tracker.js';
 
 describe('Output tracker', () => {
   it('uses custom event to track output', () => {

@@ -1,3 +1,5 @@
+// Copyright (c) 2025 Falko Schumann. All rights reserved. MIT license.
+
 import { Repository } from '../infrastructure/repository.js';
 import { CHANGE_USER_ACTION, START_ACTION } from '../domain/action-types.js';
 import * as actions from '../domain/actions.js';

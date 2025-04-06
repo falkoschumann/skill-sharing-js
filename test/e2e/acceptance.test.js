@@ -1,48 +1,50 @@
-// Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
+// Copyright (c) 2025 Falko Schumann. All rights reserved. MIT license.
 
-import fs from 'node:fs/promises';
-import path from 'node:path';
-import puppeteer from 'puppeteer';
-import { describe, expect, it } from 'vitest';
+import fs from "node:fs/promises";
+import path from "node:path";
+import puppeteer from "puppeteer";
+import { describe, expect, it } from "vitest";
 
 import {
   ServerConfiguration,
   SkillSharingApplication,
-  SkillSharingConfiguration,
-} from '../../api/ui/application.js';
-import { RepositoryConfiguration } from '../../api/infrastructure/repository.js';
+  SkillSharingConfiguration
+} from "../../src/ui/application.js";
+import {
+  RepositoryConfiguration
+} from "../../src/infrastructure/repository.js";
 
 /**
- * @typedef {import('puppeteer').Browser} Browser
- * @typedef {import('puppeteer').Page} Page
+ * @typedef {import("puppeteer").Browser} Browser
+ * @typedef {import("puppeteer").Page} Page
  */
 
-describe('User Acceptance Tests', () => {
-  it('Submit and comment a talk', async () => {
+describe("User Acceptance Tests", () => {
+  it("Submit and comment a talk", async () => {
     await startAndStop(async (browser) => {
       const app = new SkillSharing(browser);
       await app.gotoSubmission();
       await app.setViewport({ width: 800, height: 1024 });
-      await app.saveScreenshot({ name: '01-app-started' });
+      await app.saveScreenshot({ name: "01-app-started" });
 
-      await app.submitTalk({ title: 'Foobar', summary: 'Lorem ipsum' });
-      await app.saveScreenshot({ name: '02-talk-submitted' });
-      await app.verifyTalkAdded({ title: 'Foobar', summary: 'Lorem ipsum' });
+      await app.submitTalk({ title: "Foobar", summary: "Lorem ipsum" });
+      await app.saveScreenshot({ name: "02-talk-submitted" });
+      await app.verifyTalkAdded({ title: "Foobar", summary: "Lorem ipsum" });
 
-      await app.changeUser({ name: 'Bob' });
-      await app.commentOnTalk({ comment: 'Amazing!' });
-      await app.saveScreenshot({ name: '03-talk-commented' });
-      await app.verifyCommentAdded({ author: 'Bob', comment: 'Amazing!' });
+      await app.changeUser({ name: "Bob" });
+      await app.commentOnTalk({ comment: "Amazing!" });
+      await app.saveScreenshot({ name: "03-talk-commented" });
+      await app.verifyCommentAdded({ author: "Bob", comment: "Amazing!" });
 
-      await app.changeUser({ name: 'Anon' });
-      await app.commentOnTalk({ comment: 'Thanks.' });
-      await app.saveScreenshot({ name: '04-comment-answered' });
-      await app.verifyCommentAdded({ author: 'Anon', comment: 'Thanks.' });
+      await app.changeUser({ name: "Anon" });
+      await app.commentOnTalk({ comment: "Thanks." });
+      await app.saveScreenshot({ name: "04-comment-answered" });
+      await app.verifyCommentAdded({ author: "Anon", comment: "Thanks." });
     });
   });
 });
 
-const server = ServerConfiguration.create({ address: 'localhost', port: 4444 });
+const server = ServerConfiguration.create({ address: "localhost", port: 4444 });
 
 /**
  * @param {function(Browser): Promise<void>} run
@@ -50,10 +52,10 @@ const server = ServerConfiguration.create({ address: 'localhost', port: 4444 });
 async function startAndStop(run) {
   const fileName = path.join(
     import.meta.dirname,
-    '../../testdata/e2e.acceptance.json',
+    "../../testdata/e2e.acceptance.json",
   );
   await fs.rm(fileName, { force: true });
-  const screenshotsDir = path.join(import.meta.dirname, '../../screenshots');
+  const screenshotsDir = path.join(import.meta.dirname, "../../screenshots");
   await fs.rm(screenshotsDir, { recursive: true, force: true });
   await fs.mkdir(screenshotsDir, { recursive: true });
 
@@ -66,7 +68,7 @@ async function startAndStop(run) {
   await application.start();
   // FIXME https://pptr.dev/troubleshooting#setting-up-chrome-linux-sandbox
   const browser = await puppeteer.launch({
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
   try {
     await run(browser);
@@ -104,7 +106,7 @@ class SkillSharing {
     const usernameInput = await this.#page.waitForSelector(
       's-user-field input[name="username"]',
     );
-    await usernameInput.evaluate((node) => (node.value = ''));
+    await usernameInput.evaluate((node) => (node.value = ""));
     await usernameInput.type(name);
   }
 
@@ -139,14 +141,14 @@ class SkillSharing {
 
   async verifyTalkAdded({ title, summary }) {
     const lastTalkTitle = await this.#page.waitForSelector(
-      's-talks > section:last-child h2',
+      "s-talks > section:last-child h2",
     );
     expect(await lastTalkTitle.evaluate((node) => node.textContent)).toContain(
       title,
     );
 
     const lastTalkSummary = await this.#page.waitForSelector(
-      's-talks > section:last-child p',
+      "s-talks > section:last-child p",
     );
     expect(
       await lastTalkSummary.evaluate((node) => node.textContent),
@@ -155,7 +157,7 @@ class SkillSharing {
 
   async verifyCommentAdded({ author, comment }) {
     const lastTalksCommentElement = await this.#page.waitForSelector(
-      's-talks > section:last-child s-comments li:last-child',
+      "s-talks > section:last-child s-comments li:last-child",
     );
     const lastTalksComment = await lastTalksCommentElement.evaluate(
       (node) => node.textContent,

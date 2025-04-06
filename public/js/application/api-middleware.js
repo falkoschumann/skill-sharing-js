@@ -1,3 +1,5 @@
+// Copyright (c) 2025 Falko Schumann. All rights reserved. MIT license.
+
 import {
   ADD_COMMENT_ACTION,
   DELETE_TALK_ACTION,
@@ -10,8 +12,8 @@ import {
   AddCommentCommand,
   DeleteTalkCommand,
   SubmitTalkCommand,
-} from '../../shared/messages.js';
-import { Comment } from '../../shared/talks.js';
+} from '../../../shared/messages.js';
+import { Comment } from '../../../shared/talks.js';
 
 export function createApiMiddleware(api = Api.create()) {
   return ({ getState, dispatch }) => {

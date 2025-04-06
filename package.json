@@ -7,34 +7,28 @@
     "node": ">=18.7.0"
   },
   "type": "module",
-  "main": "api/main.js",
+  "main": "src/main.js",
   "scripts": {
-    "start": "node api/main.js",
-    "test": "vitest",
-    "dev": "npm run \"dev:api\" & npm run \"dev:vite\"",
-    "dev:api": "nodemon api/main.js",
-    "dev:vite": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "start": "node src/main.js",
+    "test": "vitest"
   },
   "dependencies": {
     "bootstrap": "5.3.5",
     "express": "5.1.0",
     "lit-html": "3.2.1",
-    "redux": "5.0.1",
-    "vite": "6.2.5"
+    "redux": "5.0.1"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "28.0.3",
-    "@rollup/plugin-json": "6.1.0",
-    "@rollup/plugin-node-resolve": "16.0.1",
     "@types/express": "5.0.1",
     "@types/supertest": "6.0.3",
     "@vitest/coverage-v8": "3.1.1",
+    "concurrently": "9.1.2",
     "eslint": "9.24.0",
+    "eslint-plugin-headers": "1.2.1",
     "eslint-plugin-lit": "2.0.0",
     "eslint-plugin-wc": "3.0.0",
     "eventsource": "3.0.6",
+    "globals": "16.0.0",
     "jsdom": "26.0.0",
     "nodemon": "3.1.9",
     "prettier": "3.5.3",
