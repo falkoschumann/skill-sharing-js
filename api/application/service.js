@@ -8,9 +8,7 @@
  * @typedef {import('../infrastructure/./repository.js').RepositoryConfiguration} RepositoryConfiguration
  */
 
-import { CommandStatus } from '@muspellheim/shared';
-
-import { TalksQueryResult } from '../../shared/messages.js';
+import { CommandStatus, TalksQueryResult } from '../../shared/messages.js';
 import { Talk } from '../../shared/talks.js';
 import { Repository } from '../infrastructure/repository.js';
 

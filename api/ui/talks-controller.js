@@ -8,27 +8,19 @@
  * @typedef {import('../application/service.js').Service} Service
  */
 
-import { ValidationError } from '@muspellheim/shared';
-import {
-  LongPolling,
-  runSafe,
-  reply,
-  SseEmitter,
-} from '@muspellheim/shared/node';
-
+import { SseEmitter } from '../infrastructure/sse-emitter.js';
+import { reply } from './handler.js';
 import {
   AddCommentCommand,
   DeleteTalkCommand,
   SubmitTalkCommand,
   TalksQuery,
 } from '../../shared/messages.js';
+import { ValidationError } from '../../shared/shared.js';
 
 export class TalksController {
   /** @type {Service} services */
   #services;
-
-  /** @type {LongPolling} */
-  #longPolling;
 
   /**
    * @param {express.Express} app
@@ -37,21 +29,12 @@ export class TalksController {
   constructor(app, services) {
     this.#services = services;
 
-    // TODO Align long polling with SSE emitter
-    this.#longPolling = new LongPolling(async () => {
-      const result = await this.#services.getTalks();
-      return result.talks;
-    });
-
-    app.get('/api/talks', runSafe(this.#getTalks.bind(this)));
-    app.get('/api/talks/:title', runSafe(this.#getTalks.bind(this)));
-    app.get('/api/talks/events', runSafe(this.#eventStreamTalks.bind(this)));
-    app.put('/api/talks/:title', runSafe(this.#putTalk.bind(this)));
-    app.delete('/api/talks/:title', runSafe(this.#deleteTalk.bind(this)));
-    app.post(
-      '/api/talks/:title/comments',
-      runSafe(this.#postComment.bind(this)),
-    );
+    app.get('/api/talks', this.#getTalks.bind(this));
+    app.get('/api/talks/:title', this.#getTalks.bind(this));
+    app.get('/api/talks/events', this.#eventStreamTalks.bind(this));
+    app.put('/api/talks/:title', this.#putTalk.bind(this));
+    app.delete('/api/talks/:title', this.#deleteTalk.bind(this));
+    app.post('/api/talks/:title/comments', this.#postComment.bind(this));
   }
 
   /**
@@ -77,8 +60,6 @@ export class TalksController {
       }
     } else if (request.headers.accept === 'text/event-stream') {
       await this.#eventStreamTalks(request, response);
-    } else {
-      await this.#longPolling.poll(request, response);
     }
   }
 
@@ -102,7 +83,6 @@ export class TalksController {
     try {
       const command = SubmitTalkCommandDto.from(request).validate();
       await this.#services.submitTalk(command);
-      await this.#longPolling.send();
       reply(response, { status: 204 });
     } catch (error) {
       if (error instanceof ValidationError) {
@@ -120,7 +100,6 @@ export class TalksController {
   async #deleteTalk(request, response) {
     const command = DeleteTalkCommandDto.from(request).validate();
     await this.#services.deleteTalk(command);
-    await this.#longPolling.send();
     reply(response, { status: 204 });
   }
 
@@ -133,7 +112,6 @@ export class TalksController {
       const command = AddCommentCommandDto.from(request).validate();
       const status = await this.#services.addComment(command);
       if (status.isSuccess) {
-        await this.#longPolling.send();
         reply(response, { status: 204 });
       } else {
         reply(response, { status: 404, body: status.errorMessage });

@@ -5,11 +5,11 @@
  */
 
 import express from 'express';
-import { StaticFilesController } from '@muspellheim/shared/node';
 
-import { TalksController } from './talks-controller.js';
 import { Service } from '../application/service.js';
 import { RepositoryConfiguration } from '../infrastructure/repository.js';
+import { TalksController } from './talks-controller.js';
+import { StaticFilesController } from './static-files-controller.js';
 
 export class SkillSharingConfiguration {
   /**
@@ -17,10 +17,12 @@ export class SkillSharingConfiguration {
    */
   static create({
     server = ServerConfiguration.create({
-      address: 'localhost',
-      port: 3000,
+      address: process.env.SERVER_ADDRESS,
+      port: process.env.SERVER_PORT,
     }),
-    repository = RepositoryConfiguration.create(),
+    repository = RepositoryConfiguration.create({
+      fileName: process.env.REPOSITORY_FILE_NAME,
+    }),
   } = {}) {
     return new SkillSharingConfiguration(server, repository);
   }
@@ -36,12 +38,10 @@ export class SkillSharingConfiguration {
 }
 
 export class ServerConfiguration {
-  // TODO Move to @muspellheim/shared
-
   /**
    * @param {Partial<ServerConfiguration>} [configuration]
    */
-  static create({ address = '0.0.0.0', port = 8080 } = {}) {
+  static create({ address = 'localhost', port = 3000 } = {}) {
     return new ServerConfiguration(address, port);
   }
 
@@ -59,7 +59,7 @@ export class SkillSharingApplication {
   /**
    * @param {SkillSharingConfiguration} configuration
    */
-  static create(configuration) {
+  static create(configuration = SkillSharingConfiguration.create()) {
     const service = Service.create(configuration);
     return new SkillSharingApplication(configuration.server, service);
   }

@@ -1,25 +1,24 @@
 // Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
 
 import { html } from 'lit-html';
-import { Container } from '@muspellheim/shared/browser';
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap/dist/js/bootstrap.esm.js';
 
-import { store } from '../application/store.js';
 import * as actions from '../domain/actions.js';
+import { Container } from './components.js';
 import './talk-form.js';
 import './talks.js';
 import './user-field.js';
-import './styles.scss';
 
 class SkillSharingComponent extends Container {
   constructor() {
     super();
     this.className = 'd-block container py-4 px-3 mx-auto';
-    Container.initStore(store);
   }
 
   connectedCallback() {
     super.connectedCallback();
-    this.store.dispatch(actions.start());
+    this.dispatch(actions.start());
   }
 
   getView() {

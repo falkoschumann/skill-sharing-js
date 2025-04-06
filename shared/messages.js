@@ -84,6 +84,35 @@ export class DeleteTalkCommand {
   }
 }
 
+export class CommandStatus {
+  static success() {
+    return new CommandStatus(true);
+  }
+
+  /**
+   * @param {string} errorMessage
+   */
+  static failure(errorMessage) {
+    return new CommandStatus(false, errorMessage);
+  }
+
+  /** @type {boolean} */
+  isSuccess;
+
+  /**
+   * @type {string|undefined} */
+  errorMessage;
+
+  /**
+   * @param {boolean} isSuccess
+   * @param {string} [errorMessage]
+   */
+  constructor(isSuccess, errorMessage) {
+    this.isSuccess = isSuccess;
+    this.errorMessage = errorMessage;
+  }
+}
+
 export class TalksQuery {
   /**
    * @param {Partial<TalksQuery>} query

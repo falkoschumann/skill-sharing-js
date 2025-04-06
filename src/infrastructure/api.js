@@ -1,16 +1,14 @@
 // Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
 
 /**
- * @typedef {import('@muspellheim/shared').MessageClient} MessageClient
- *
  * @typedef {import('../../shared/messages.js').AddCommentCommand} AddCommentCommand
  * @typedef {import('../../shared/messages.js').DeleteTalkCommand} DeleteTalkCommand
  * @typedef {import('../../shared/messages.js').SubmitTalkCommand} SubmitTalkCommand
  */
 
-import { LongPollingClient, OutputTracker } from '@muspellheim/shared';
-
+import { SseClient } from './sse-client.js';
 import { Talk } from '../../shared/talks.js';
+import { OutputTracker } from '../util/output-tracker.js';
 
 const BASE_URL = '/api/talks';
 
@@ -32,10 +30,7 @@ export class TalksUpdatedEvent extends Event {
 
 export class Api extends EventTarget {
   static create() {
-    return new Api(
-      LongPollingClient.create(),
-      globalThis.fetch.bind(globalThis),
-    );
+    return new Api(SseClient.create(), globalThis.fetch.bind(globalThis));
   }
 
   /**
@@ -44,21 +39,17 @@ export class Api extends EventTarget {
    * @returns {Api}
    */
   static createNull({ fetchResponse } = {}) {
-    return new Api(
-      LongPollingClient.createNull({ fetchResponse }),
-      // @ts-ignore
-      fetchStub,
-    );
+    return new Api(SseClient.createNull({ fetchResponse }), fetchStub);
   }
 
-  /** @type {MessageClient} */
+  /** @type {SseClient} */
   #talksClient;
 
   /** @type {typeof globalThis.fetch} */
   #fetch;
 
   /**
-   * @param {MessageClient} talksClient
+   * @param {SseClient} talksClient
    * @param {typeof globalThis.fetch} fetch
    */
   constructor(talksClient, fetch) {

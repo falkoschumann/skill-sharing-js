@@ -1,9 +1,9 @@
 // Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
 
 import { html } from 'lit-html';
-import { Container } from '@muspellheim/shared/browser';
 
 import * as actions from '../domain/actions.js';
+import { Container } from './components.js';
 
 class TalkFormComponent extends Container {
   getView() {
@@ -60,7 +60,7 @@ class TalkFormComponent extends Container {
    */
   #submitTalk(form) {
     const formData = new FormData(form);
-    this.store.dispatch(
+    this.dispatch(
       actions.submitTalk(formData.get('title'), formData.get('summary')),
     );
     form.reset();
