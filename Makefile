@@ -58,8 +58,8 @@ integration-tests: prepare
 e2e-tests: prepare
 	npx vitest run --testPathPattern=".*\/e2e\/.*"
 
+# TODO Use rollup to create vendor bundle for import map
 build: prepare
-	# TODO Use rollup to create vendor bundle for import map
 
 prepare: version
 	@if [ -n "$(CI)" ] ; then \
