@@ -3,9 +3,11 @@
     "title": "Talk test title",
     "presenter": "Talk test presenter",
     "summary": "Talk test summary.",
-    "comments": [{
-      "author": "Comment test author",
-      "message": "Comment test message"
-    }]
+    "comments": [
+      {
+        "author": "Comment test author",
+        "message": "Comment test message"
+      }
+    ]
   }
 }

@@ -1,27 +1,18 @@
 // Copyright (c) 2025 Falko Schumann. All rights reserved. MIT license.
 
-/**
- * @ignore @typedef {typeof EventSource} EventSourceConstructor
- */
-
 export class SseClient extends EventTarget {
   static create() {
-    return new SseClient(EventSource);
+    return new SseClient(globalThis.EventSource);
   }
 
   static createNull() {
     return new SseClient(EventSourceStub);
   }
 
-  /** @type {typeof EventSource} */
   #eventSourceConstructor;
 
-  /** @type {EventSource} */
   #eventSource;
 
-  /**
-   * @param {typeof EventSource} eventSourceConstructor
-   */
   constructor(eventSourceConstructor) {
     super();
     this.#eventSourceConstructor = eventSourceConstructor;
@@ -35,27 +26,23 @@ export class SseClient extends EventTarget {
     return this.#eventSource?.url;
   }
 
-  /**
-   * @param {URL | string} url
-   * @param {string} [eventName="message"]
-   */
-  async connect(url, eventName = 'message') {
+  async connect(url, eventName = "message") {
     await new Promise((resolve, reject) => {
       if (this.isConnected) {
-        reject(new Error('Already connected.'));
+        reject(new Error("Already connected."));
         return;
       }
 
       try {
         this.#eventSource = new this.#eventSourceConstructor(url);
-        this.#eventSource.addEventListener('open', (e) => {
+        this.#eventSource.addEventListener("open", (e) => {
           this.#handleOpen(e);
           resolve();
         });
         this.#eventSource.addEventListener(eventName, (e) =>
           this.#handleMessage(e),
         );
-        this.#eventSource.addEventListener('error', (e) =>
+        this.#eventSource.addEventListener("error", (e) =>
           this.#handleError(e),
         );
       } catch (error) {
@@ -80,19 +67,14 @@ export class SseClient extends EventTarget {
     });
   }
 
-  /**
-   * @param {string} message
-   * @param {string} [eventName=message]
-   * @param {string} [lastEventId]
-   */
-  simulateMessage(message, eventName = 'message', lastEventId = undefined) {
+  simulateMessage(message, eventName = "message", lastEventId = undefined) {
     this.#handleMessage(
       new MessageEvent(eventName, { data: message, lastEventId }),
     );
   }
 
   simulateError() {
-    this.#handleError(new Event('error'));
+    this.#handleError(new Event("error"));
   }
 
   #handleOpen(event) {
@@ -119,7 +101,7 @@ class EventSourceStub extends EventTarget {
     this.url = url;
     setTimeout(() => {
       this.readyState = EventSourceStub.OPEN;
-      this.dispatchEvent(new Event('open'));
+      this.dispatchEvent(new Event("open"));
     }, 0);
   }
 

@@ -1,9 +1,9 @@
 // Copyright (c) 2025 Falko Schumann. All rights reserved. MIT license.
 
-import { html } from 'lit-html';
+import { html } from "lit-html";
 
-import * as actions from '../domain/actions.js';
-import { Container } from './components.js';
+import { submitTalk } from "../application/talks_slice.js";
+import { Container } from "./components.js";
 
 class TalkFormComponent extends Container {
   getView() {
@@ -36,9 +36,6 @@ class TalkFormComponent extends Container {
     `;
   }
 
-  /**
-   * @param {SubmitEvent} event
-   */
   #formSubmitted(event) {
     event.preventDefault();
     if (this.#validateForm(event.target)) {
@@ -46,25 +43,21 @@ class TalkFormComponent extends Container {
     }
   }
 
-  /**
-   * @param {HTMLFormElement} form
-   * @returns {boolean}
-   */
   #validateForm(form) {
     form.reportValidity();
     return form.checkValidity();
   }
 
-  /**
-   * @param {HTMLFormElement} form
-   */
   #submitTalk(form) {
     const formData = new FormData(form);
     this.dispatch(
-      actions.submitTalk(formData.get('title'), formData.get('summary')),
+      submitTalk({
+        title: formData.get("title"),
+        summary: formData.get("summary"),
+      }),
     );
     form.reset();
   }
 }
 
-window.customElements.define('s-talk-form', TalkFormComponent);
+window.customElements.define("s-talk-form", TalkFormComponent);

@@ -1,13 +1,8 @@
 // Copyright (c) 2025 Falko Schumann. All rights reserved. MIT license.
 
-/**
- * @typedef {import('redux').Unsubscribe} Unsubscribe
- * @typedef {import('redux').Action} Action
- */
+import { html, render } from "lit-html";
 
-import { html, render } from 'lit-html';
-
-import { store } from '../application/store.js';
+import { store } from "../application/store.js";
 
 export class Component extends HTMLElement {
   connectedCallback() {
@@ -35,7 +30,6 @@ export class Component extends HTMLElement {
 }
 
 export class Container extends Component {
-  /** @type {Unsubscribe} */
   #unsubscribeStore;
 
   constructor() {
@@ -43,9 +37,6 @@ export class Container extends Component {
     this.state = {};
   }
 
-  /**
-   * @param action {Action}
-   */
   dispatch(action) {
     store.dispatch(action);
   }
@@ -65,10 +56,6 @@ export class Container extends Component {
     super.updateView();
   }
 
-  /**
-   * @param state {any}
-   * @returns {any}
-   */
   extractState(state) {
     return state;
   }

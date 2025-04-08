@@ -1,14 +1,14 @@
 // Copyright (c) 2025 Falko Schumann. All rights reserved. MIT license.
 
-import { html } from 'lit-html';
+import { html } from "lit-html";
 
-import * as actions from '../domain/actions.js';
-import { Container } from './components.js';
-import './comments.js';
+import { deleteTalk, selectTalks } from "../application/talks_slice.js";
+import { Container } from "./components.js";
+import "./comments.js";
 
 class TalksComponent extends Container {
   extractState(state) {
-    return state.talks;
+    return selectTalks(state);
   }
 
   getView() {
@@ -22,7 +22,7 @@ class TalksComponent extends Container {
           ${talk.title}
           <button
             class="btn btn-secondary btn-sm"
-            @click=${() => this.#deleteTalk(talk.title)}
+            @click=${() => this.dispatch(deleteTalk({ title: talk.title }))}
           >
             Delete
           </button>
@@ -33,10 +33,6 @@ class TalksComponent extends Container {
       </section>
     `;
   }
-
-  #deleteTalk(title) {
-    this.dispatch(actions.deleteTalk(title));
-  }
 }
 
-window.customElements.define('s-talks', TalksComponent);
+window.customElements.define("s-talks", TalksComponent);

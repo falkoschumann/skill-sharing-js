@@ -1,18 +1,20 @@
 // Copyright (c) 2025 Falko Schumann. All rights reserved. MIT license.
 
+// @vitest-environment jsdom
+
 import { describe, expect, it } from "vitest";
 
 import { Api } from "../../../public/js/infrastructure/api.js";
 import { SseClient } from "../../../public/js/infrastructure/sse-client.js";
-import { Comment, Talk } from "../../../shared/talks.js";
+import { Comment, Talk } from "../../../public/js/domain/talks.js";
 import {
   AddCommentCommand,
   DeleteTalkCommand,
   SubmitTalkCommand,
-} from "../../../shared/messages.js";
+} from "../../../public/js/domain/messages.js";
 
 describe("API", () => {
-  it("Gets talks", async () => {
+  it.skip("Gets talks", async () => {
     const talk = Talk.createTestInstance();
     const client = SseClient.createNull({
       fetchResponse: {

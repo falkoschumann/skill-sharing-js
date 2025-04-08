@@ -1,29 +1,15 @@
 // Copyright (c) 2025 Falko Schumann. All rights reserved. MIT license.
 
 export class OutputTracker {
-  /**
-   * @param {EventTarget} eventTarget
-   * @param {string} event
-   */
   static create(eventTarget, event) {
     return new OutputTracker(eventTarget, event);
   }
 
-  /** @type {EventTarget} */
   #eventTarget;
-
-  /** @type {string} */
   #event;
-
-  /** @type {EventListener} */
   #tracker;
-
   #data = [];
 
-  /**
-   * @param {EventTarget} eventTarget
-   * @param {string} event
-   */
   constructor(eventTarget, event) {
     this.#eventTarget = eventTarget;
     this.#event = event;

@@ -1,27 +1,18 @@
 // Copyright (c) 2025 Falko Schumann. All rights reserved. MIT license.
 
-/**
- * @typedef {import('../../../shared/messages.js').AddCommentCommand} AddCommentCommand
- * @typedef {import('../../../shared/messages.js').DeleteTalkCommand} DeleteTalkCommand
- * @typedef {import('../../../shared/messages.js').SubmitTalkCommand} SubmitTalkCommand
- */
+import { SseClient } from "./sse-client.js";
+import { Talk } from "../domain/talks.js";
+import { OutputTracker } from "../util/output-tracker.js";
 
-import { SseClient } from './sse-client.js';
-import { Talk } from '../../../shared/talks.js';
-import { OutputTracker } from '../util/output-tracker.js';
+const BASE_URL = "/api/talks";
 
-const BASE_URL = '/api/talks';
-
-export const TALK_SUBMITTED_EVENT = 'talk-submitted';
-export const TALK_DELETED_EVENT = 'talk-deleted';
-export const COMMENT_ADDED_EVENT = 'comment-added';
+export const TALK_SUBMITTED_EVENT = "talk-submitted";
+export const TALK_DELETED_EVENT = "talk-deleted";
+export const COMMENT_ADDED_EVENT = "comment-added";
 
 export class TalksUpdatedEvent extends Event {
-  static TYPE = 'talks-updated';
+  static TYPE = "talks-updated";
 
-  /**
-   * @param {Talk[]} talks
-   */
   constructor(talks) {
     super(TalksUpdatedEvent.TYPE);
     this.talks = talks;
@@ -33,32 +24,20 @@ export class Api extends EventTarget {
     return new Api(SseClient.create(), globalThis.fetch.bind(globalThis));
   }
 
-  /**
-   * @param {object} [options]
-   * @param {object} [options.fetchResponse]
-   * @returns {Api}
-   */
   static createNull({ fetchResponse } = {}) {
     return new Api(SseClient.createNull({ fetchResponse }), fetchStub);
   }
 
-  /** @type {SseClient} */
   #talksClient;
-
-  /** @type {typeof globalThis.fetch} */
   #fetch;
 
-  /**
-   * @param {SseClient} talksClient
-   * @param {typeof globalThis.fetch} fetch
-   */
   constructor(talksClient, fetch) {
     super();
     this.#talksClient = talksClient;
     this.#fetch = fetch;
 
     this.#talksClient.addEventListener(
-      'message',
+      "message",
       this.#handleMessage.bind(this),
     );
   }
@@ -71,14 +50,11 @@ export class Api extends EventTarget {
     await this.#talksClient.close();
   }
 
-  /**
-   * @param {SubmitTalkCommand} command
-   */
   async submitTalk(command) {
     const body = JSON.stringify(command);
     await this.#fetch(`${BASE_URL}/${encodeURIComponent(command.title)}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
       body,
     });
     this.dispatchEvent(
@@ -92,16 +68,13 @@ export class Api extends EventTarget {
     return OutputTracker.create(this, TALK_SUBMITTED_EVENT);
   }
 
-  /**
-   * @param {AddCommentCommand} command
-   */
   async addComment(command) {
     const body = JSON.stringify(command.comment);
     await this.#fetch(
       `${BASE_URL}/${encodeURIComponent(command.title)}/comments`,
       {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body,
       },
     );
@@ -116,12 +89,9 @@ export class Api extends EventTarget {
     return OutputTracker.create(this, COMMENT_ADDED_EVENT);
   }
 
-  /**
-   * @param {DeleteTalkCommand} command
-   */
   async deleteTalk(command) {
     await this.#fetch(`${BASE_URL}/${encodeURIComponent(command.title)}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
     this.dispatchEvent(
       new CustomEvent(TALK_DELETED_EVENT, { detail: command }),
@@ -132,9 +102,6 @@ export class Api extends EventTarget {
     return OutputTracker.create(this, TALK_DELETED_EVENT);
   }
 
-  /**
-   * @param {MessageEvent} event
-   */
   #handleMessage(event) {
     const dtos = JSON.parse(event.data);
     const talks = dtos.map((dto) => Talk.create(dto));
@@ -142,5 +109,4 @@ export class Api extends EventTarget {
   }
 }
 
-async function fetchStub() {
-}
+async function fetchStub() {}

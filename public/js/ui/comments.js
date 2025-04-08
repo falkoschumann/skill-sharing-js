@@ -1,16 +1,11 @@
 // Copyright (c) 2025 Falko Schumann. All rights reserved. MIT license.
 
-import { html } from 'lit-html';
-import { Component } from './components.js';
+import { html } from "lit-html";
 
-/**
- * @typedef {import('../../../shared/talks.js').Talk} Talk
- */
-import { store } from '../application/store.js';
-import * as actions from '../domain/actions.js';
+import { addComment } from "../application/talks_slice.js";
+import { Component } from "./components.js";
 
 class CommentsComponent extends Component {
-  /** @type {Talk|undefined} */
   #talk;
 
   get talk() {
@@ -66,11 +61,14 @@ class CommentsComponent extends Component {
 
   #addComment(form) {
     const formData = new FormData(form);
-    store.dispatch(
-      actions.addComment(formData.get('talkTitle'), formData.get('comment')),
+    this.dispatch(
+      addComment({
+        title: formData.get("talkTitle"),
+        message: formData.get("comment"),
+      }),
     );
     form.reset();
   }
 }
 
-window.customElements.define('s-comments', CommentsComponent);
+window.customElements.define("s-comments", CommentsComponent);

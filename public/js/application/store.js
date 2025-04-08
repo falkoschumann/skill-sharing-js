@@ -1,14 +1,23 @@
 // Copyright (c) 2025 Falko Schumann. All rights reserved. MIT license.
 
-import { applyMiddleware, legacy_createStore as createStore } from 'redux';
+import { configureStore } from "@reduxjs/toolkit";
 
-import { reducer } from '../domain/reducer.js';
-import { createApiMiddleware } from './api-middleware.js';
-import { createRepositoryMiddleware } from './repository-middleware.js';
+import talksReducer from "./talks_slice.js";
+import { Repository } from "../infrastructure/repository.js";
+import { Api } from "../infrastructure/api.js";
 
-// TODO Replace middleware with slices for talks and user
+export const store = createStore(Api.create(), Repository.create());
 
-export const store = createStore(
-  reducer,
-  applyMiddleware(createRepositoryMiddleware(), createApiMiddleware()),
-);
+export function createStore(api, repository) {
+  return configureStore({
+    reducer: {
+      talks: talksReducer,
+    },
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        thunk: {
+          extraArgument: { api, repository },
+        },
+      }),
+  });
+}

@@ -1,19 +1,19 @@
 // Copyright (c) 2025 Falko Schumann. All rights reserved. MIT license.
 
-import { html } from 'lit-html';
+import { html } from "lit-html";
 
-import * as actions from '../domain/actions.js';
-import { Container } from './components.js';
+import { changeUser, selectUser } from "../application/talks_slice.js";
+import { Container } from "./components.js";
 
 class UserFieldComponent extends Container {
   constructor() {
     super();
-    this.className = 'd-block mb-4';
-    this.state = '';
+    this.className = "d-block mb-4";
+    this.state = "";
   }
 
   extractState(state) {
-    return state.user;
+    return selectUser(state);
   }
 
   getView() {
@@ -27,18 +27,12 @@ class UserFieldComponent extends Container {
           autocomplete="username"
           class="form-control"
           .value="${this.state}"
-          @change=${(e) => this.#changeUser(e)}
+          @change=${(event) =>
+            this.dispatch(changeUser({ username: event.target.value }))}
         />
       </div>
     `;
   }
-
-  /**
-   * @param {InputEvent} event
-   */
-  #changeUser(event) {
-    this.dispatch(actions.changeUser(event.target.value));
-  }
 }
 
-window.customElements.define('s-user-field', UserFieldComponent);
+window.customElements.define("s-user-field", UserFieldComponent);

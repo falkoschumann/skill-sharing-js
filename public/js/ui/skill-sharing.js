@@ -2,11 +2,13 @@
 
 import { html } from "lit-html";
 
-import * as actions from "../domain/actions.js";
+import { start } from "../application/talks_slice.js";
 import { Container } from "./components.js";
 import "./talk-form.js";
 import "./talks.js";
 import "./user-field.js";
+
+// TODO Refactor into ATOM architecture
 
 class SkillSharingComponent extends Container {
   constructor() {
@@ -16,7 +18,7 @@ class SkillSharingComponent extends Container {
 
   connectedCallback() {
     super.connectedCallback();
-    this.dispatch(actions.start());
+    this.dispatch(start());
   }
 
   getView() {

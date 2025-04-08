@@ -1,27 +1,27 @@
 // Copyright (c) 2025 Falko Schumann. All rights reserved. MIT license.
 
-/* @vitest-environment jsdom */
+// @vitest-environment jsdom
 
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from "vitest";
 
-import { Repository } from '../../../public/js/infrastructure/repository.js';
-import { User } from '../../../public/js/domain/users.js';
+import { Repository } from "../../../public/js/infrastructure/repository.js";
+import { User } from "../../../public/js/domain/users.js";
 
-describe('Repository', () => {
+describe("Repository", () => {
   beforeEach(() => {
     localStorage.clear();
   });
 
-  it('Loads and store settings', async () => {
+  it("Loads and store settings", async () => {
     const repository = Repository.create();
 
-    await repository.store({ username: 'Alice' });
+    await repository.store({ username: "Alice" });
     const settings = await repository.load();
 
-    expect(settings).toEqual({ username: 'Alice' });
+    expect(settings).toEqual({ username: "Alice" });
   });
 
-  it('Loads empty object when storage is empty', async () => {
+  it("Loads empty object when storage is empty", async () => {
     const repository = Repository.create();
 
     const settings = await repository.load();
@@ -29,8 +29,8 @@ describe('Repository', () => {
     expect(settings).toBeUndefined();
   });
 
-  describe('Memory repository', () => {
-    it('Creates empty', async () => {
+  describe("Memory repository", () => {
+    it("Creates empty", async () => {
       const repository = Repository.createNull();
 
       const settings = await repository.load();
@@ -38,23 +38,23 @@ describe('Repository', () => {
       expect(settings).toBeUndefined();
     });
 
-    it('Initializes with user', async () => {
+    it("Initializes with user", async () => {
       const repository = Repository.createNull({
-        user: User.create({ username: 'Bob' }),
+        user: User.create({ username: "Bob" }),
       });
 
       const settings = await repository.load();
 
-      expect(settings).toEqual({ username: 'Bob' });
+      expect(settings).toEqual({ username: "Bob" });
     });
 
-    it('Loads and store settings', async () => {
+    it("Loads and store settings", async () => {
       const repository = Repository.createNull();
 
-      await repository.store({ username: 'Charly' });
+      await repository.store({ username: "Charly" });
       const settings = await repository.load();
 
-      expect(settings).toEqual({ username: 'Charly' });
+      expect(settings).toEqual({ username: "Charly" });
     });
   });
 });

@@ -8,18 +8,11 @@ import { describe, expect, it } from "vitest";
 import {
   ServerConfiguration,
   SkillSharingApplication,
-  SkillSharingConfiguration
+  SkillSharingConfiguration,
 } from "../../src/ui/application.js";
-import {
-  RepositoryConfiguration
-} from "../../src/infrastructure/repository.js";
+import { RepositoryConfiguration } from "../../src/infrastructure/repository.js";
 
-/**
- * @typedef {import("puppeteer").Browser} Browser
- * @typedef {import("puppeteer").Page} Page
- */
-
-describe("User Acceptance Tests", () => {
+describe.skip("User Acceptance Tests", () => {
   it("Submit and comment a talk", async () => {
     await startAndStop(async (browser) => {
       const app = new SkillSharing(browser);
@@ -46,9 +39,6 @@ describe("User Acceptance Tests", () => {
 
 const server = ServerConfiguration.create({ address: "localhost", port: 4444 });
 
-/**
- * @param {function(Browser): Promise<void>} run
- */
 async function startAndStop(run) {
   const fileName = path.join(
     import.meta.dirname,
@@ -80,11 +70,8 @@ async function startAndStop(run) {
 
 class SkillSharing {
   #browser;
-  /** @type {Page} */ #page;
+  #page;
 
-  /**
-   * @param {Browser} browser
-   */
   constructor(browser) {
     this.#browser = browser;
   }

@@ -9,8 +9,8 @@ import {
   SubmitTalkCommand,
   TalksQuery,
   TalksQueryResult,
-} from "../../../shared/messages.js";
-import { Talk } from "../../../shared/talks.js";
+} from "../../../public/js/domain/messages.js";
+import { Talk } from "../../../public/js/domain/talks.js";
 import { Service } from "../../../src/application/service.js";
 import { Repository } from "../../../src/infrastructure/repository.js";
 

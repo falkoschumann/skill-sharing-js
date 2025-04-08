@@ -1,46 +1,29 @@
 // Copyright (c) 2025 Falko Schumann. All rights reserved. MIT license.
 
-/**
- * @typedef {import('express').Express} express.Express
- * @typedef {import('express').Request} express.Request
- * @typedef {import('express').Response} express.Response
- *
- * @typedef {import('../application/service.js').Service} Service
- */
-
-import { SseEmitter } from '../infrastructure/sse-emitter.js';
-import { reply } from './handler.js';
+import { SseEmitter } from "../infrastructure/sse-emitter.js";
+import { reply } from "./handler.js";
 import {
   AddCommentCommand,
   DeleteTalkCommand,
   SubmitTalkCommand,
   TalksQuery,
-} from '../../shared/messages.js';
-import { ValidationError } from '../../shared/shared.js';
+} from "../../public/js/domain/messages.js";
+import { ValidationError } from "../util/validation.js";
 
 export class TalksController {
-  /** @type {Service} services */
   #services;
 
-  /**
-   * @param {express.Express} app
-   * @param {Service} services
-   */
   constructor(app, services) {
     this.#services = services;
 
-    app.get('/api/talks', this.#getTalks.bind(this));
-    app.get('/api/talks/:title', this.#getTalks.bind(this));
-    app.get('/api/talks/events', this.#eventStreamTalks.bind(this));
-    app.put('/api/talks/:title', this.#putTalk.bind(this));
-    app.delete('/api/talks/:title', this.#deleteTalk.bind(this));
-    app.post('/api/talks/:title/comments', this.#postComment.bind(this));
+    app.get("/api/talks", this.#getTalks.bind(this));
+    app.get("/api/talks/:title", this.#getTalks.bind(this));
+    app.get("/api/talks/events", this.#eventStreamTalks.bind(this));
+    app.put("/api/talks/:title", this.#putTalk.bind(this));
+    app.delete("/api/talks/:title", this.#deleteTalk.bind(this));
+    app.post("/api/talks/:title/comments", this.#postComment.bind(this));
   }
 
-  /**
-   * @param {express.Request} request
-   * @param {express.Response} response
-   */
   async #getTalks(request, response) {
     // TODO Handle WebSocket
     const query = TalksQueryDto.from(request).validate();
@@ -49,7 +32,7 @@ export class TalksController {
       if (result.talks.length > 0) {
         reply(response, {
           status: 200,
-          headers: { 'Content-Type': 'application/json' },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(result.talks[0]),
         });
       } else {
@@ -58,15 +41,11 @@ export class TalksController {
           body: `Talk not found: "${query.title}".`,
         });
       }
-    } else if (request.headers.accept === 'text/event-stream') {
+    } else if (request.headers.accept === "text/event-stream") {
       await this.#eventStreamTalks(request, response);
     }
   }
 
-  /**
-   * @param {express.Request} request
-   * @param {express.Response} response
-   */
   async #eventStreamTalks(request, response) {
     // TODO send talks to client when updated
     const emitter = new SseEmitter();
@@ -75,10 +54,6 @@ export class TalksController {
     emitter.send(result.talks);
   }
 
-  /**
-   * @param {express.Request} request
-   * @param {express.Response} response
-   */
   async #putTalk(request, response) {
     try {
       const command = SubmitTalkCommandDto.from(request).validate();
@@ -93,20 +68,12 @@ export class TalksController {
     }
   }
 
-  /**
-   * @param {express.Request} request
-   * @param {express.Response} response
-   */
   async #deleteTalk(request, response) {
     const command = DeleteTalkCommandDto.from(request).validate();
     await this.#services.deleteTalk(command);
     reply(response, { status: 204 });
   }
 
-  /**
-   * @param {express.Request} request
-   * @param {express.Response} response
-   */
   async #postComment(request, response) {
     try {
       const command = AddCommentCommandDto.from(request).validate();
@@ -127,9 +94,6 @@ export class TalksController {
 }
 
 class TalksQueryDto {
-  /**
-   * @param {express.Request} request
-   */
   static from(request) {
     const title =
       request.params.title != null
@@ -138,51 +102,34 @@ class TalksQueryDto {
     return new TalksQueryDto(title);
   }
 
-  /**
-   * @param {string} [title]
-   */
   constructor(title) {
     this.title = title;
   }
 
-  /**
-   * @returns {TalksQuery}
-   */
   validate() {
     return TalksQuery.create({ title: this.title });
   }
 }
 
 class SubmitTalkCommandDto {
-  /**
-   * @param {express.Request} request
-   */
   static from(request) {
     const title = decodeURIComponent(request.params.title);
     const { presenter, summary } = request.body;
     return new SubmitTalkCommandDto(title, presenter, summary);
   }
 
-  /**
-   * @param {string} title
-   * @param {string} presenter
-   * @param {string} summary
-   */
   constructor(title, presenter, summary) {
     this.title = title;
     this.presenter = presenter;
     this.summary = summary;
   }
 
-  /**
-   * @returns {SubmitTalkCommand}
-   */
   validate() {
     if (
-      typeof this.presenter !== 'string' ||
-      typeof this.summary !== 'string'
+      typeof this.presenter !== "string" ||
+      typeof this.summary !== "string"
     ) {
-      throw new ValidationError('Bad submit talk command.');
+      throw new ValidationError("Bad submit talk command.");
     }
 
     return SubmitTalkCommand.create({
@@ -194,56 +141,36 @@ class SubmitTalkCommandDto {
 }
 
 class DeleteTalkCommandDto {
-  /**
-   * @param {express.Request} request
-   */
   static from(request) {
     const title = decodeURIComponent(request.params.title);
     return new DeleteTalkCommandDto(title);
   }
 
-  /**
-   * @param {string} [title]
-   */
   constructor(title) {
     this.title = title;
   }
 
-  /**
-   * @returns {DeleteTalkCommand}
-   */
   validate() {
     return DeleteTalkCommand.create({ title: this.title });
   }
 }
 
 class AddCommentCommandDto {
-  /**
-   * @param {express.Request} request
-   */
   static from(request) {
     const title = decodeURIComponent(request.params.title);
     const { author, message } = request.body;
     return new AddCommentCommandDto(title, author, message);
   }
 
-  /**
-   * @param {string} title
-   * @param {string} author
-   * @param {string} message
-   */
   constructor(title, author, message) {
     this.title = title;
     this.author = author;
     this.message = message;
   }
 
-  /**
-   * @returns {AddCommentCommand}
-   */
   validate() {
-    if (typeof this.author !== 'string' || typeof this.message !== 'string') {
-      throw new ValidationError('Bad add comment command.');
+    if (typeof this.author !== "string" || typeof this.message !== "string") {
+      throw new ValidationError("Bad add comment command.");
     }
 
     return AddCommentCommand.create({
