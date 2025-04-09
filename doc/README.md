@@ -20,7 +20,7 @@
 ### Add comment
 
 - Adds comment to an existing talk
-- Reports an error if talk does not exists
+- Reports an error if talk does not exist
 
 ### Delete talk
 
@@ -30,10 +30,6 @@
 ### Talks
 
 - Lists all talks
-
-### Metrics
-
-- Count talks and presenters
 
 ## Aggregates
 
@@ -64,17 +60,6 @@ classDiagram
     }
 
     Talk *--> Comment: comments
-```
-
-### Metrics
-
-```mermaid
-classDiagram
-    class Talk {
-        talksCount: Integer
-        presentersCount: Integer
-        commentsCount: Integer
-    }
 ```
 
 ## Architecture
