@@ -4,8 +4,8 @@
 
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { Repository } from "../../../public/js/infrastructure/repository.js";
 import { User } from "../../../public/js/domain/users.js";
+import { Repository } from "../../../public/js/infrastructure/repository.js";
 
 describe("Repository", () => {
   beforeEach(() => {

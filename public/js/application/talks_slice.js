@@ -7,6 +7,7 @@ import {
   DeleteTalkCommand,
   SubmitTalkCommand,
 } from "../domain/messages.js";
+import { Comment } from "../domain/talks.js";
 
 const initialState = {
   talks: [],
@@ -27,9 +28,8 @@ const start = createAsyncThunk("talks/start", async (action, thunkApi) => {
 
 const changeUser = createAsyncThunk(
   "talks/changeUser",
-  async (action, thunkApi) => {
+  async ({ username }, thunkApi) => {
     const { repository } = thunkApi.extra;
-    const { username } = action.payload;
     await repository.store({ username });
     return { username };
   },
@@ -37,40 +37,37 @@ const changeUser = createAsyncThunk(
 
 const submitTalk = createAsyncThunk(
   "talks/submitTalk",
-  async (action, thunkApi) => {
+  async ({ title, summary }, thunkApi) => {
     const { api } = thunkApi.extra;
-    const presenter = thunkApi.getState().user;
-    const { title, summary } = action.payload;
+    const presenter = selectUser(thunkApi.getState());
     const command = SubmitTalkCommand.create({
       title,
       presenter,
       summary,
     });
-    api.submitTalk(command);
+    return api.submitTalk(command);
   },
 );
 
 const addComment = createAsyncThunk(
   "talks/addComment",
-  async (action, thunkApi) => {
+  async ({ title, message }, thunkApi) => {
     const { api } = thunkApi.extra;
-    const author = thunkApi.getState().user;
-    const { title, message } = action.payload;
+    const author = selectUser(thunkApi.getState());
     const command = AddCommentCommand.create({
       title,
       comment: Comment.create({ author, message }),
     });
-    api.addComment(command);
+    return api.addComment(command);
   },
 );
 
 const deleteTalk = createAsyncThunk(
   "talks/deleteTalk",
-  async (action, thunkApi) => {
+  async ({ title }, thunkApi) => {
     const { api } = thunkApi.extra;
-    const { title } = action.payload;
     const command = DeleteTalkCommand.create({ title });
-    api.deleteTalk(command);
+    return api.deleteTalk(command);
   },
 );
 
@@ -85,6 +82,12 @@ const talksSlice = createSlice({
       state.talks = action.payload.talks;
     },
   },
+  extraReducers: (builder) => {
+    // Change user
+    builder.addCase(changeUser.fulfilled, (state, action) => {
+      state.user = action.payload.username;
+    });
+  },
   selectors: {
     selectTalks: (state) => state.talks,
     selectUser: (state) => state.user,
@@ -97,7 +100,7 @@ export default talksSlice.reducer;
 export { start, changeUser, submitTalk, addComment, deleteTalk };
 
 // Sync Actions
-export const { userChanged, talksUpdated } = talksSlice.actions;
+const { userChanged, talksUpdated } = talksSlice.actions;
 
 // Selectors
 export const { selectTalks, selectUser } = talksSlice.selectors;

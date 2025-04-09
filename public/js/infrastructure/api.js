@@ -24,8 +24,8 @@ export class Api extends EventTarget {
     return new Api(SseClient.create(), globalThis.fetch.bind(globalThis));
   }
 
-  static createNull({ fetchResponse } = {}) {
-    return new Api(SseClient.createNull({ fetchResponse }), fetchStub);
+  static createNull() {
+    return new Api(SseClient.createNull(), fetchStub);
   }
 
   #talksClient;
@@ -48,6 +48,10 @@ export class Api extends EventTarget {
 
   async close() {
     await this.#talksClient.close();
+  }
+
+  simulateMessage(message) {
+    this.#talksClient.simulateMessage(message);
   }
 
   async submitTalk(command) {

@@ -9,56 +9,46 @@ import {
   addComment,
   changeUser,
   deleteTalk,
+  selectTalks,
+  selectUser,
   start,
   submitTalk,
 } from "../../../public/js/application/talks_slice.js";
 import { Talk } from "../../../public/js/domain/talks.js";
 import { User } from "../../../public/js/domain/users.js";
-import {
-  Api,
-  COMMENT_ADDED_EVENT,
-  TALK_DELETED_EVENT,
-  TALK_SUBMITTED_EVENT,
-  TalksUpdatedEvent,
-} from "../../../public/js/infrastructure/api.js";
+import { Api } from "../../../public/js/infrastructure/api.js";
 import { Repository } from "../../../public/js/infrastructure/repository.js";
 
-describe.skip("Store", () => {
+describe("Store", () => {
   describe("Change user", () => {
     it("Updates user name", async () => {
       const { store, repository } = configure();
-      const result = new Promise((resolve) => store.subscribe(resolve));
 
       const user = User.createTestInstance();
-      store.dispatch(changeUser({ username: user.username }));
-      await result;
+      await store.dispatch(changeUser(user));
 
       const settings = await repository.load();
-      expect(store.getState().user).toEqual(user.username);
+      expect(selectUser(store.getState())).toEqual(user.username);
       expect(settings).toEqual(user);
     });
   });
 
-  describe("Load user", () => {
+  describe("User", () => {
     it("Anon is the default user", async () => {
       const { store } = configure();
-      const result = new Promise((resolve) => store.subscribe(resolve));
 
-      store.dispatch(start());
-      await result;
+      await store.dispatch(start());
 
-      expect(store.getState().user).toEqual("Anon");
+      expect(selectUser(store.getState())).toEqual("Anon");
     });
 
     it("Is stored user", async () => {
       const user = User.createTestInstance();
       const { store } = configure({ user });
-      const result = new Promise((resolve) => store.subscribe(resolve));
 
-      store.dispatch(start());
-      await result;
+      await store.dispatch(start());
 
-      expect(store.getState().user).toEqual(user.username);
+      expect(selectUser(store.getState())).toEqual(user.username);
     });
   });
 
@@ -66,12 +56,13 @@ describe.skip("Store", () => {
     it("Adds talk to list", async () => {
       const { store, api } = configure();
       const talksSubmitted = api.trackTalksSubmitted();
-      const result = new Promise((resolve) =>
-        api.addEventListener(TALK_SUBMITTED_EVENT, resolve),
-      );
 
-      store.dispatch(submitTalk({ title: "Foobar", summary: "Lorem ipsum" }));
-      await result;
+      await store.dispatch(
+        submitTalk({
+          title: "Foobar",
+          summary: "Lorem ipsum",
+        }),
+      );
 
       expect(talksSubmitted.data).toEqual([
         { title: "Foobar", presenter: "Anon", summary: "Lorem ipsum" },
@@ -83,12 +74,13 @@ describe.skip("Store", () => {
     it("Adds comment to an existing talk", async () => {
       const { store, api } = configure();
       const commentsAdded = api.trackCommentsAdded();
-      const result = new Promise((resolve) =>
-        api.addEventListener(COMMENT_ADDED_EVENT, resolve),
-      );
 
-      store.dispatch(addComment({ title: "Foobar", message: "Lorem ipsum" }));
-      await result;
+      await store.dispatch(
+        addComment({
+          title: "Foobar",
+          message: "Lorem ipsum",
+        }),
+      );
 
       expect(commentsAdded.data).toEqual([
         {
@@ -97,53 +89,36 @@ describe.skip("Store", () => {
         },
       ]);
     });
-
-    it.todo("Reports an error when talk does not exists");
   });
 
   describe("Delete talk", () => {
     it("Removes talk from list", async () => {
       const { store, api } = configure();
       const talksDeleted = api.trackTalksDeleted();
-      const result = new Promise((resolve) =>
-        api.addEventListener(TALK_DELETED_EVENT, resolve),
-      );
 
-      store.dispatch(deleteTalk({ title: "Foobar" }));
-      await result;
+      await store.dispatch(deleteTalk({ title: "Foobar" }));
 
       expect(talksDeleted.data).toEqual([{ title: "Foobar" }]);
     });
-
-    it.todo("Ignores already removed talk");
   });
 
   describe("Talks", () => {
     it("Lists all talks", async () => {
-      const talk = Talk.createTestInstance();
-      const { store, api } = configure({
-        fetchResponse: {
-          status: 200,
-          headers: { etag: "1" },
-          body: JSON.stringify([talk]),
-        },
-      });
-      const result = new Promise((resolve) =>
-        api.addEventListener(TalksUpdatedEvent.TYPE, () => resolve()),
-      );
+      const { store, api } = configure();
 
-      store.dispatch(start());
-      await result;
+      await store.dispatch(start());
+      api.simulateMessage(JSON.stringify([Talk.createTestInstance()]));
 
-      expect(store.getState().talks).toEqual([talk]);
-      await api.close();
+      expect(selectTalks(store.getState())).toEqual([
+        Talk.createTestInstance(),
+      ]);
     });
   });
 });
 
-function configure({ user, fetchResponse } = {}) {
+function configure({ user } = {}) {
   const repository = Repository.createNull({ user });
-  const api = Api.createNull({ fetchResponse });
+  const api = Api.createNull();
   const store = createStore(api, repository);
   return { store, repository, api };
 }

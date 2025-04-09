@@ -4,45 +4,37 @@
 
 import { describe, expect, it } from "vitest";
 
-import { Api } from "../../../public/js/infrastructure/api.js";
-import { SseClient } from "../../../public/js/infrastructure/sse-client.js";
 import { Comment, Talk } from "../../../public/js/domain/talks.js";
 import {
   AddCommentCommand,
   DeleteTalkCommand,
   SubmitTalkCommand,
 } from "../../../public/js/domain/messages.js";
+import { Api } from "../../../public/js/infrastructure/api.js";
+import { SseClient } from "../../../public/js/infrastructure/sse-client.js";
 
 describe("API", () => {
-  it.skip("Gets talks", async () => {
-    const talk = Talk.createTestInstance();
-    const client = SseClient.createNull({
-      fetchResponse: {
-        status: 200,
-        headers: { etag: "1" },
-        body: JSON.stringify([talk]),
-      },
-    });
-    const api = new Api(client, null);
+  it("Gets talks", async () => {
+    const { api, sseClient } = configure();
     const events = [];
     const result = new Promise((resolve) =>
-      client.addEventListener("message", () => resolve()),
+      sseClient.addEventListener("message", () => resolve()),
     );
     api.addEventListener("talks-updated", (event) => events.push(event));
 
     await api.connect();
+    sseClient.simulateMessage(JSON.stringify([Talk.createTestInstance()]));
     await result;
 
     expect(events).toEqual([
       expect.objectContaining({
-        talks: [talk],
+        talks: [Talk.createTestInstance()],
       }),
     ]);
-    client.close();
   });
 
   it("Submits talk", async () => {
-    const api = Api.createNull();
+    const { api } = configure();
     const talksPut = api.trackTalksSubmitted();
 
     await api.submitTalk(
@@ -59,7 +51,7 @@ describe("API", () => {
   });
 
   it("Posts comment", async () => {
-    const api = Api.createNull();
+    const { api } = configure();
     const commentsPosted = api.trackCommentsAdded();
 
     await api.addComment(
@@ -81,7 +73,7 @@ describe("API", () => {
   });
 
   it("Deletes talk", async () => {
-    const api = Api.createNull();
+    const { api } = configure();
     const talksDeleted = api.trackTalksDeleted();
 
     await api.deleteTalk(DeleteTalkCommand.create({ title: "title-1" }));
@@ -89,3 +81,9 @@ describe("API", () => {
     expect(talksDeleted.data).toEqual([{ title: "title-1" }]);
   });
 });
+
+function configure() {
+  const sseClient = SseClient.createNull();
+  const api = new Api(sseClient, () => {});
+  return { api, sseClient };
+}
