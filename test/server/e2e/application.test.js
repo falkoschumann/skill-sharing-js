@@ -7,6 +7,11 @@ import request from "supertest";
 import { describe, expect, it } from "vitest";
 
 import {
+  ServerConfiguration,
+  SkillSharingApplication,
+  SkillSharingConfiguration,
+} from "../../../src/ui/application.js";
+import {
   AddCommentCommand,
   CommandStatus,
   DeleteTalkCommand,
@@ -15,14 +20,9 @@ import {
   TalksQueryResult,
 } from "../../../public/js/domain/messages.js";
 import { Comment, Talk } from "../../../public/js/domain/talks.js";
-import {
-  ServerConfiguration,
-  SkillSharingApplication,
-  SkillSharingConfiguration,
-} from "../../../src/ui/application.js";
 import { RepositoryConfiguration } from "../../../src/infrastructure/repository.js";
 
-describe.skip("Application", () => {
+describe("Application", () => {
   it("Starts and stops the app", async () => {
     await startAndStop(async () => {});
   });
@@ -182,7 +182,7 @@ describe.skip("Application", () => {
     });
   });
 
-  describe("Long polling", () => {
+  describe.skip("Long polling", () => {
     it("Replies with talks when client asks for the first time", async () => {
       await startAndStop(async ({ url }) => {
         await submitTalk(url);
@@ -270,7 +270,7 @@ describe.skip("Application", () => {
     });
   });
 
-  describe("Receive talk updates", () => {
+  describe.skip("Receive talk updates", () => {
     it("Receives talk updates", async () => {
       await startAndStop(async ({ url, source }) => {
         await submitTalk(url);

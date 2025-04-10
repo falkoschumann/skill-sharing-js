@@ -37,7 +37,7 @@ dev: prepare
     		--kill-others \
     		--names "API,WEB" \
     		--prefix-colors "bgMagenta.bold,bgGreen.bold" \
-    		"npx nodemon --ignore public/ --ignore data/ api/main.js" \
+    		"npx nodemon --ignore public/ --ignore data/ --ignore testdata/ api/main.js" \
     		"npx browser-sync http://localhost:8080 public --watch --no-open"
 
 test: prepare

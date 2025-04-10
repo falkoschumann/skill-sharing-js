@@ -25,7 +25,6 @@ export class TalksController {
   }
 
   async #getTalks(request, response) {
-    // TODO Handle WebSocket
     const query = TalksQueryDto.from(request).validate();
     if (query.title != null) {
       const result = await this.#services.getTalks(query);
@@ -43,6 +42,13 @@ export class TalksController {
       }
     } else if (request.headers.accept === "text/event-stream") {
       await this.#eventStreamTalks(request, response);
+    } else {
+      const result = await this.#services.getTalks();
+      reply(response, {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(result.talks),
+      });
     }
   }
 
