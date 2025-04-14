@@ -1,8 +1,7 @@
 # Possible values: major, minor, patch or concrete version
 VERSION=minor
 
-# TODO remove --experimental-global-customevent when Node.js 18 must not be supported anymore
-export NODE_OPTIONS=--experimental-global-customevent
+export NODE_OPTIONS=
 export NPM_CONFIG_YES=true
 
 all: dist check
