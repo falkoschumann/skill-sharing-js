@@ -1,0 +1,32 @@
+### Submit talk
+PUT http://localhost:8080/api/talks/Foobar
+Content-Type: application/json
+
+{
+  "title": "Foobar",
+  "presenter": "Alice",
+  "summary": "Lorem ipsum",
+  "comments": []
+}
+
+### Post comment
+POST http://localhost:8080/api/talks/Foobar/comments
+Content-Type: application/json
+
+{
+  "author": "Bob",
+  "message": "Awesome topic!"
+}
+
+### Query talk by title
+GET http://localhost:8080/api/talks/Foobar
+
+### Query talks
+GET http://localhost:8080/api/talks
+
+### Talks stream
+GET http://localhost:8080/api/talks
+Accept: text/event-stream
+
+### Delete talk
+DELETE http://localhost:8080/api/talks/Foobar
