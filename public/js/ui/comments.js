@@ -3,9 +3,9 @@
 import { html } from "lit-html";
 
 import { addComment } from "../application/talks_slice.js";
-import { Component } from "./components.js";
+import { Container } from "./components.js";
 
-class CommentsComponent extends Component {
+class CommentsComponent extends Container {
   #talk;
 
   get talk() {

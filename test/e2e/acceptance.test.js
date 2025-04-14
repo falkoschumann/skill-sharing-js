@@ -12,7 +12,7 @@ import {
 } from "../../src/ui/application.js";
 import { RepositoryConfiguration } from "../../src/infrastructure/repository.js";
 
-describe.skip("User Acceptance Tests", () => {
+describe("User Acceptance Tests", () => {
   it("Submit and comment a talk", async () => {
     await startAndStop(async (browser) => {
       const app = new SkillSharing(browser);

@@ -6,7 +6,9 @@ import path from "node:path";
 import { Talk } from "../../public/js/domain/talks.js";
 
 export class RepositoryConfiguration {
-  static create({ fileName = "./data/talks.json" } = {}) {
+  static create({
+    fileName = process.env.REPOSITORY_FILE_NAME || "./data/talks.json",
+  } = {}) {
     return new RepositoryConfiguration(fileName);
   }
 

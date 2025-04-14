@@ -6,7 +6,7 @@ const storageKey = "skillSharing";
 
 export class Repository {
   static create() {
-    return new Repository(localStorage);
+    return new Repository(globalThis.localStorage);
   }
 
   static createNull({ user } = {}) {

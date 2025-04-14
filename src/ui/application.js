@@ -9,13 +9,8 @@ import { StaticFilesController } from "./static-files-controller.js";
 
 export class SkillSharingConfiguration {
   static create({
-    server = ServerConfiguration.create({
-      address: process.env.SERVER_ADDRESS,
-      port: process.env.SERVER_PORT,
-    }),
-    repository = RepositoryConfiguration.create({
-      fileName: process.env.REPOSITORY_FILE_NAME,
-    }),
+    server = ServerConfiguration.create(),
+    repository = RepositoryConfiguration.create(),
   } = {}) {
     return new SkillSharingConfiguration(server, repository);
   }
@@ -27,7 +22,10 @@ export class SkillSharingConfiguration {
 }
 
 export class ServerConfiguration {
-  static create({ address = "localhost", port = 8080 } = {}) {
+  static create({
+    address = process.env.SERVER_ADDRESS || "localhost",
+    port = process.env.SERVER_PORT || 8080,
+  } = {}) {
     return new ServerConfiguration(address, port);
   }
 
@@ -53,23 +51,18 @@ export class SkillSharingApplication {
     this.#app = express();
     this.#app.set("x-powered-by", false);
     this.#app.use(express.json());
-    new StaticFilesController(this.#app, "./dist");
+    new StaticFilesController(this.#app);
     new TalksController(this.#app, service);
   }
 
   async start() {
-    // TODO Use logger instead of console
     console.info("Starting server...");
+    const { address, port } = this.#configuration;
     await new Promise((resolve) => {
-      this.#server = this.#app.listen(
-        this.#configuration.port,
-        this.#configuration.address,
-        () => resolve(),
-      );
+      this.#server = this.#app.listen(port, address);
+      this.#server.on("listening", () => resolve());
     });
-    console.info(
-      `Server is listening on ${this.#configuration.address}:${this.#configuration.port}.`,
-    );
+    console.info(`Server is listening on ${address}:${port}.`);
   }
 
   async stop() {

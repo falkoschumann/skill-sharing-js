@@ -10,9 +10,10 @@ import { Repository } from "../infrastructure/repository.js";
 // TODO Handle errors
 // TODO Add logging
 // TODO Add validation
-// TODO Add metrics
 
-export class Service {
+export const TALKS_CHANGED_EVENT = "talks-changed";
+
+export class Service extends EventTarget {
   static create(configuration) {
     const repository = Repository.create(configuration.repository);
     return new Service(repository);
@@ -26,12 +27,14 @@ export class Service {
   #repository;
 
   constructor(repository) {
+    super();
     this.#repository = repository;
   }
 
   async submitTalk(command) {
     const talk = Talk.create(command);
     await this.#repository.addOrUpdate(talk);
+    this.dispatchEvent(new Event(TALKS_CHANGED_EVENT));
     return CommandStatus.success();
   }
 
@@ -45,11 +48,13 @@ export class Service {
 
     talk.addComment(command.comment);
     await this.#repository.addOrUpdate(talk);
+    this.dispatchEvent(new Event(TALKS_CHANGED_EVENT));
     return CommandStatus.success();
   }
 
   async deleteTalk(command) {
     await this.#repository.remove(command.title);
+    this.dispatchEvent(new Event(TALKS_CHANGED_EVENT));
     return CommandStatus.success();
   }
 

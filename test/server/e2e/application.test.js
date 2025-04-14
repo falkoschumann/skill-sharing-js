@@ -2,7 +2,7 @@
 
 import fs from "node:fs/promises";
 import path from "node:path";
-//import EventSource from 'eventsource';
+import { EventSource } from "eventsource";
 import request from "supertest";
 import { describe, expect, it } from "vitest";
 
@@ -182,109 +182,27 @@ describe("Application", () => {
     });
   });
 
-  describe.skip("Long polling", () => {
-    it("Replies with talks when client asks for the first time", async () => {
-      await startAndStop(async ({ url }) => {
-        await submitTalk(url);
-
-        const response = await request(url)
-          .get("/api/talks")
-          .set("Accept", "application/json");
-
-        expect(response.status).toEqual(200);
-        expect(response.get("Content-Type")).toMatch(/application\/json/);
-        expect(response.get("Cache-Control")).toEqual("no-store");
-        expect(response.get("ETag")).toEqual('"1"');
-        expect(response.body).toEqual([Talk.createTestInstance()]);
-      });
-    });
-
-    it("Replies with talks when client is not up to date", async () => {
-      await startAndStop(async ({ url }) => {
-        await submitTalk(url);
-
-        const response = await request(url)
-          .get("/api/talks")
-          .set("Accept", "application/json")
-          .set("If-None-Match", '"0"');
-
-        expect(response.status).toEqual(200);
-        expect(response.get("Content-Type")).toMatch(/application\/json/);
-        expect(response.get("Cache-Control")).toEqual("no-store");
-        expect(response.get("ETag")).toEqual('"1"');
-        expect(response.body).toEqual([Talk.createTestInstance()]);
-      });
-    });
-
-    it("Reports not modified when client is up to date", async () => {
-      await startAndStop(async ({ url }) => {
-        await submitTalk(url);
-
-        const response = await request(url)
-          .get("/api/talks")
-          .set("Accept", "application/json")
-          .set("If-None-Match", '"1"');
-
-        expect(response.status).toEqual(304);
-      });
-    });
-
-    it("Reports not modified when long polling results in a timeout", async () => {
-      await startAndStop(async ({ url }) => {
-        const responsePromise = request(url)
-          .get("/api/talks")
-          .set("Accept", "application/json")
-          .set("Prefer", "wait=1")
-          .set("If-None-Match", '"0"');
-        const submitHandler = setTimeout(
-          () =>
-            request(url)
-              .put("/api/talks/Foobar")
-              .set("Content-Type", "application/json")
-              .send({ presenter: "Anon", summary: "Lorem ipsum" }),
-          2000,
-        );
-        const response = await responsePromise;
-
-        expect(response.status).toEqual(304);
-        clearTimeout(submitHandler);
-      });
-    });
-
-    it("Replies talks when a talk was submitted while long polling", async () => {
-      await startAndStop(async ({ url }) => {
-        const timeoutId = setTimeout(() => submitTalk(url), 500);
-        const response = await request(url)
-          .get("/api/talks")
-          .set("Accept", "application/json")
-          .set("Prefer", "wait=1")
-          .set("If-None-Match", '"0"');
-        clearTimeout(timeoutId);
-
-        expect(response.status).toEqual(200);
-        expect(response.get("Content-Type")).toMatch(/application\/json/);
-        expect(response.get("Cache-Control")).toEqual("no-store");
-        expect(response.get("ETag")).toEqual('"1"');
-        expect(response.body).toEqual([Talk.createTestInstance()]);
-      });
-    });
-  });
-
-  describe.skip("Receive talk updates", () => {
+  describe("Receive talk updates", () => {
     it("Receives talk updates", async () => {
       await startAndStop(async ({ url, source }) => {
-        await submitTalk(url);
-
-        // FIXME Submitted talk is not written to disk when the event is sent
-        const talks = await new Promise((resolve) => {
+        await new Promise((resolve) =>
+          source.addEventListener("open", resolve),
+        );
+        const talksPromise = new Promise((resolve) => {
+          const data = [];
           source.addEventListener("message", (event) => {
-            resolve(JSON.parse(event.data));
+            const talks = JSON.parse(event.data);
+            data.push(talks);
+            if (data.length === 2) {
+              resolve(data);
+            }
           });
         });
 
-        expect(talks).toEqual([
-          { title: "Foobar", presenter: "Anon", summary: "Lorem ipsum" },
-        ]);
+        await submitTalk(url);
+        const talks = await talksPromise;
+
+        expect(talks).toEqual([[], [Talk.createTestInstance()]]);
       });
     });
   });
@@ -308,20 +226,24 @@ async function startAndStop(run) {
   await application.start();
   const url = `http://${address}:${port}`;
   const client = new ServiceClient(url);
-  // TODO Create EventSource only if run() needs it
-  //const source = new EventSource(`${url}/api/talks`);
-  const source = null;
+  // TODO Remove dependency on eventsource when Node.js supports it
+  const source = new EventSource(`${url}/api/talks`);
+  source.addEventListener("open", () => console.log("Event source opened"));
+  source.addEventListener("error", (error) =>
+    console.error("Event source error", error),
+  );
+  source.addEventListener("message", (event) =>
+    console.log("Event source message", event.data),
+  );
   try {
     await run({ url, client, source });
   } finally {
-    //source.close();
+    source.close();
     await application.stop();
   }
 }
 
 class ServiceClient {
-  // TODO Use fetch() instead of supertest
-
   #url;
 
   constructor(url) {
