@@ -16,7 +16,7 @@
     "@reduxjs/toolkit": "2.6.1",
     "bootstrap": "5.3.5",
     "express": "5.1.0",
-    "lit-html": "3.2.1"
+    "lit-html": "3.3.0"
   },
   "devDependencies": {
     "@types/express": "5.0.1",
