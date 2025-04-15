@@ -1,8 +1,9 @@
 // Copyright (c) 2025 Falko Schumann. All rights reserved. MIT license.
 
 import {
-  CommandStatus,
-  TalksQueryResult,
+  failure,
+  success,
+  validateTalksQueryResult,
 } from "../../public/js/domain/messages.js";
 import { Talk } from "../../public/js/domain/talks.js";
 import { Repository } from "../infrastructure/repository.js";
@@ -35,13 +36,13 @@ export class Service extends EventTarget {
     const talk = Talk.create(command);
     await this.#repository.addOrUpdate(talk);
     this.dispatchEvent(new Event(TALKS_CHANGED_EVENT));
-    return CommandStatus.success();
+    return success();
   }
 
   async addComment(command) {
     const talk = await this.#repository.findByTitle(command.title);
     if (talk == null) {
-      return CommandStatus.failure(
+      return failure(
         `The comment cannot be added because the talk "${command.title}" does not exist.`,
       );
     }
@@ -49,23 +50,23 @@ export class Service extends EventTarget {
     talk.addComment(command.comment);
     await this.#repository.addOrUpdate(talk);
     this.dispatchEvent(new Event(TALKS_CHANGED_EVENT));
-    return CommandStatus.success();
+    return success();
   }
 
   async deleteTalk(command) {
     await this.#repository.remove(command.title);
     this.dispatchEvent(new Event(TALKS_CHANGED_EVENT));
-    return CommandStatus.success();
+    return success();
   }
 
   async getTalks(query) {
     if (query?.title != null) {
       const talk = await this.#repository.findByTitle(query.title);
       const talks = talk ? [talk] : [];
-      return TalksQueryResult.create({ talks });
+      return validateTalksQueryResult({ talks });
     }
 
     const talks = await this.#repository.findAll();
-    return TalksQueryResult.create({ talks });
+    return validateTalksQueryResult({ talks });
   }
 }

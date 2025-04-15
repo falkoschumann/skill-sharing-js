@@ -2,10 +2,10 @@
 
 import { SseEmitter } from "../infrastructure/sse-emitter.js";
 import {
-  AddCommentCommand,
-  DeleteTalkCommand,
-  SubmitTalkCommand,
-  TalksQuery,
+  validateAddCommentCommand,
+  validateDeleteTalkCommand,
+  validateSubmitTalkCommand,
+  validateTalksQuery,
 } from "../../public/js/domain/messages.js";
 import { TALKS_CHANGED_EVENT } from "../application/service.js";
 
@@ -23,7 +23,11 @@ export class TalksController {
   }
 
   async #getTalks(request, response) {
-    const query = validateTalksQuery(request);
+    const title =
+      request.params.title != null
+        ? decodeURIComponent(request.params.title)
+        : undefined;
+    const query = validateTalksQuery({ title });
     if (query.title != null) {
       const result = await this.#services.getTalks(query);
       if (result.talks.length > 0) {
@@ -57,7 +61,8 @@ export class TalksController {
   }
 
   async #putTalk(request, response) {
-    const command = validateSubmitTalkCommand(request);
+    const title = decodeURIComponent(request.params.title);
+    const command = validateSubmitTalkCommand({ ...request.body, title });
     if (!command) {
       response
         .status(400)
@@ -71,13 +76,15 @@ export class TalksController {
   }
 
   async #deleteTalk(request, response) {
-    const command = validateDeleteTalkCommand(request);
+    const title = decodeURIComponent(request.params.title);
+    const command = validateDeleteTalkCommand({ title });
     await this.#services.deleteTalk(command);
     response.status(204).send();
   }
 
   async #postComment(request, response) {
-    const command = validateAddCommentCommand(request);
+    const title = decodeURIComponent(request.params.title);
+    const command = validateAddCommentCommand({ title, comment: request.body });
     if (!command) {
       response
         .status(400)
@@ -96,39 +103,4 @@ export class TalksController {
         .send(status.errorMessage);
     }
   }
-}
-
-// TODO Move validation to the domain layer
-
-function validateTalksQuery(request) {
-  const title =
-    request.params.title != null
-      ? decodeURIComponent(request.params.title)
-      : undefined;
-  return TalksQuery.create({ title });
-}
-
-function validateSubmitTalkCommand(request) {
-  const title = decodeURIComponent(request.params.title);
-  const { presenter, summary } = request.body;
-  if (typeof presenter !== "string" || typeof summary !== "string") {
-    return false;
-  }
-
-  return SubmitTalkCommand.create({ title, presenter, summary });
-}
-
-function validateDeleteTalkCommand(request) {
-  const title = decodeURIComponent(request.params.title);
-  return DeleteTalkCommand.create({ title });
-}
-
-function validateAddCommentCommand(request) {
-  const title = decodeURIComponent(request.params.title);
-  const { author, message } = request.body;
-  if (typeof author !== "string" || typeof message !== "string") {
-    return false;
-  }
-
-  return AddCommentCommand.create({ title, comment: { author, message } });
 }

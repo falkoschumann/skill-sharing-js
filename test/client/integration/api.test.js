@@ -6,9 +6,9 @@ import { describe, expect, it } from "vitest";
 
 import { Comment, Talk } from "../../../public/js/domain/talks.js";
 import {
-  AddCommentCommand,
-  DeleteTalkCommand,
-  SubmitTalkCommand,
+  validateAddCommentCommand,
+  validateDeleteTalkCommand,
+  validateSubmitTalkCommand,
 } from "../../../public/js/domain/messages.js";
 import { Api } from "../../../public/js/infrastructure/api.js";
 import { SseClient } from "../../../public/js/infrastructure/sse-client.js";
@@ -38,7 +38,7 @@ describe("API", () => {
     const talksPut = api.trackTalksSubmitted();
 
     await api.submitTalk(
-      SubmitTalkCommand.create({
+      validateSubmitTalkCommand({
         title: "title-1",
         presenter: "presenter-1",
         summary: "summary-1",
@@ -55,7 +55,7 @@ describe("API", () => {
     const commentsPosted = api.trackCommentsAdded();
 
     await api.addComment(
-      AddCommentCommand.create({
+      validateAddCommentCommand({
         title: "title-1",
         comment: Comment.create({
           author: "author-1",
@@ -76,7 +76,7 @@ describe("API", () => {
     const { api } = configure();
     const talksDeleted = api.trackTalksDeleted();
 
-    await api.deleteTalk(DeleteTalkCommand.create({ title: "title-1" }));
+    await api.deleteTalk(validateDeleteTalkCommand({ title: "title-1" }));
 
     expect(talksDeleted.data).toEqual([{ title: "title-1" }]);
   });

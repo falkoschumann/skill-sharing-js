@@ -1,108 +1,92 @@
 // Copyright (c) 2025 Falko Schumann. All rights reserved. MIT license.
 
-import { Comment, Talk } from "./talks.js";
+import { validateComment, validateTalk } from "./talks.js";
 
-export class SubmitTalkCommand {
-  static create({ title, presenter, summary } = {}) {
-    return new SubmitTalkCommand(title, presenter, summary);
-  }
+// TODO write tests
 
-  static createTestInstance({
-    title = "Talk test title",
-    presenter = "Talk test presenter",
-    summary = "Talk test summary.",
-  } = {}) {
-    return new SubmitTalkCommand(title, presenter, summary);
-  }
-
-  constructor(title, presenter, summary) {
-    this.title = title;
-    this.presenter = presenter;
-    this.summary = summary;
-  }
+export function success() {
+  return { isSuccess: true };
 }
 
-export class AddCommentCommand {
-  static create({ title, comment } = {}) {
-    return new AddCommentCommand(title, comment);
-  }
-
-  static createTestInstance({
-    title = "Talk test title",
-    comment = Comment.createTestInstance(),
-  } = {}) {
-    return new AddCommentCommand(title, comment);
-  }
-
-  constructor(title, comment) {
-    this.title = title;
-    this.comment = comment;
-  }
+export function failure(errorMessage) {
+  return { isSuccess: false, errorMessage };
 }
 
-export class DeleteTalkCommand {
-  static create({ title } = {}) {
-    return new DeleteTalkCommand(title);
+export function validateSubmitTalkCommand(command) {
+  if (
+    command == null ||
+    typeof command.title !== "string" ||
+    typeof command.presenter !== "string" ||
+    typeof command.summary !== "string"
+  ) {
+    return false;
   }
 
-  static createTestInstance({ title = "Talk test title" } = {}) {
-    return new DeleteTalkCommand(title);
-  }
-
-  constructor(title) {
-    this.title = title;
-  }
+  return {
+    title: command.title,
+    presenter: command.presenter,
+    summary: command.summary,
+  };
 }
 
-export class CommandStatus {
-  static success() {
-    return new CommandStatus(true);
+export function validateAddCommentCommand(command) {
+  if (
+    command == null ||
+    typeof command.title !== "string" ||
+    !validateComment(command.comment)
+  ) {
+    return false;
   }
 
-  static failure(errorMessage) {
-    return new CommandStatus(false, errorMessage);
-  }
-
-  isSuccess;
-
-  errorMessage;
-
-  constructor(isSuccess, errorMessage) {
-    this.isSuccess = isSuccess;
-    this.errorMessage = errorMessage;
-  }
+  return {
+    title: command.title,
+    comment: {
+      author: command.comment.author,
+      message: command.comment.message,
+    },
+  };
 }
 
-export class TalksQuery {
-  static create({ title } = {}) {
-    return new TalksQuery(title);
+export function validateDeleteTalkCommand(command) {
+  if (command == null || typeof command.title !== "string") {
+    return false;
   }
 
-  static createTestInstance({ title = "Talk test title" } = {}) {
-    return new TalksQuery(title);
-  }
-
-  constructor(title) {
-    this.title = title;
-  }
+  return { title: command.title };
 }
 
-export class TalksQueryResult {
-  static create({ talks = [] } = {}) {
-    return new TalksQueryResult(talks);
+export function validateCommandStatus(status) {
+  if (
+    status == null ||
+    typeof status.isSuccess !== "boolean" ||
+    (status.errorMessage != null && typeof status.errorMessage !== "string")
+  ) {
+    return false;
   }
 
-  static createTestInstance({ talks = [Talk.createTestInstance()] } = {}) {
-    return new TalksQueryResult(talks);
+  return {
+    isSuccess: status.isSuccess,
+    errorMessage: status.errorMessage,
+  };
+}
+
+export function validateTalksQuery(query) {
+  if (query == null || typeof query.title !== "string") {
+    return false;
   }
 
-  static createTestInstanceWithComment({
-    talks = [Talk.createTestInstanceWithComment()],
-  } = {}) {
-    return new TalksQueryResult(talks);
+  return { title: query.title };
+}
+
+export function validateTalksQueryResult(result) {
+  if (result == null || !Array.isArray(result.talks)) {
+    return false;
   }
 
-  constructor(talks) {
-    this.talks = talks;
+  const talks = result.talks.map((talk) => validateTalk(talk));
+  if (talks.some((talk) => talk === false)) {
+    return false;
   }
+
+  return { talks };
 }

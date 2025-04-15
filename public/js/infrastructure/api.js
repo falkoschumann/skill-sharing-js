@@ -19,6 +19,8 @@ export class TalksUpdatedEvent extends Event {
   }
 }
 
+// TODO validate responses (command status, query result)
+
 export class Api extends EventTarget {
   static create() {
     return new Api(SseClient.create(), globalThis.fetch.bind(globalThis));

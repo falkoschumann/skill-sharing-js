@@ -12,15 +12,23 @@ import {
   SkillSharingConfiguration,
 } from "../../../src/ui/application.js";
 import {
-  AddCommentCommand,
-  CommandStatus,
-  DeleteTalkCommand,
-  SubmitTalkCommand,
-  TalksQuery,
-  TalksQueryResult,
+  failure,
+  success,
+  validateTalksQuery,
+  validateTalksQueryResult,
 } from "../../../public/js/domain/messages.js";
 import { Comment, Talk } from "../../../public/js/domain/talks.js";
 import { RepositoryConfiguration } from "../../../src/infrastructure/repository.js";
+import {
+  createTestAddCommentCommand,
+  createTestDeleteTalkCommand,
+  createTestSubmitTalkCommand,
+  createTestTalk,
+  createTestTalksQuery,
+  createTestTalksQueryResult,
+  createTestTalksQueryResultWithComment,
+  createTestTalkWithComment,
+} from "../../data/testdata.js";
 
 describe("Application", () => {
   it("Starts and stops the app", async () => {
@@ -30,27 +38,23 @@ describe("Application", () => {
   describe("Submit talk", () => {
     it("Adds talk to list", async () => {
       await startAndStop(async ({ client }) => {
-        const status = await client.submitTalk(
-          SubmitTalkCommand.createTestInstance(),
-        );
+        const status = await client.submitTalk(createTestSubmitTalkCommand());
 
-        expect(status).toEqual(CommandStatus.success());
+        expect(status).toEqual(success());
         const result = await client.getTalks();
-        expect(result).toEqual(TalksQueryResult.createTestInstance());
+        expect(result).toEqual(createTestTalksQueryResult());
       });
     });
 
     it("Reports an error when talk could not add", async () => {
       await startAndStop(async ({ client }) => {
         const status = await client.submitTalk(
-          SubmitTalkCommand.createTestInstance({ presenter: null }),
+          createTestSubmitTalkCommand({ presenter: null }),
         );
 
-        expect(status).toEqual(
-          CommandStatus.failure("Bad submit talk command."),
-        );
+        expect(status).toEqual(failure("Bad submit talk command."));
         const result = await client.getTalks();
-        expect(result).toEqual(TalksQueryResult.create());
+        expect(result).toEqual({ talks: [] });
       });
     });
   });
@@ -58,32 +62,28 @@ describe("Application", () => {
   describe("Add comment", () => {
     it("Adds comment to an existing talk", async () => {
       await startAndStop(async ({ client }) => {
-        await client.submitTalk(SubmitTalkCommand.createTestInstance());
+        await client.submitTalk(createTestSubmitTalkCommand());
 
-        const status = await client.addComment(
-          AddCommentCommand.createTestInstance(),
-        );
+        const status = await client.addComment(createTestAddCommentCommand());
 
-        expect(status).toEqual(CommandStatus.success());
+        expect(status).toEqual(success());
         const result = await client.getTalks();
-        expect(result).toEqual(
-          TalksQueryResult.createTestInstanceWithComment(),
-        );
+        expect(result).toEqual(createTestTalksQueryResultWithComment());
       });
     });
 
     it("Reports an error when talk does not exists", async () => {
       await startAndStop(async ({ client }) => {
-        await client.submitTalk(SubmitTalkCommand.createTestInstance());
+        await client.submitTalk(createTestSubmitTalkCommand());
 
         const status = await client.addComment(
-          AddCommentCommand.createTestInstance({
+          createTestAddCommentCommand({
             title: "Non existing talk",
           }),
         );
 
         expect(status).toEqual(
-          CommandStatus.failure(
+          failure(
             'The comment cannot be added because the talk "Non existing talk" does not exist.',
           ),
         );
@@ -92,17 +92,15 @@ describe("Application", () => {
 
     it("Reports an error when comment could not add", async () => {
       await startAndStop(async ({ client }) => {
-        await client.submitTalk(SubmitTalkCommand.createTestInstance());
+        await client.submitTalk(createTestSubmitTalkCommand());
 
         const status = await client.addComment(
-          AddCommentCommand.createTestInstance({
+          createTestAddCommentCommand({
             comment: Comment.createTestInstance({ author: null }),
           }),
         );
 
-        expect(status).toEqual(
-          CommandStatus.failure("Bad add comment command."),
-        );
+        expect(status).toEqual(failure("Bad add comment command."));
       });
     });
   });
@@ -110,25 +108,23 @@ describe("Application", () => {
   describe("Delete talk", () => {
     it("Deletes an existing talk", async () => {
       await startAndStop(async ({ client }) => {
-        await client.submitTalk(SubmitTalkCommand.createTestInstance());
+        await client.submitTalk(createTestSubmitTalkCommand());
 
-        const status = await client.deleteTalk(
-          DeleteTalkCommand.createTestInstance(),
-        );
+        const status = await client.deleteTalk(createTestDeleteTalkCommand());
 
-        expect(status).toEqual(CommandStatus.success());
+        expect(status).toEqual(success());
       });
     });
 
     it("Reports no error when talk does not exist", async () => {
       await startAndStop(async ({ client }) => {
         const status = await client.deleteTalk(
-          DeleteTalkCommand.createTestInstance({
+          createTestDeleteTalkCommand({
             title: "non-existing-talk",
           }),
         );
 
-        expect(status).toEqual(CommandStatus.success());
+        expect(status).toEqual(success());
       });
     });
   });
@@ -136,23 +132,17 @@ describe("Application", () => {
   describe("Talks", () => {
     it("Returns all talks", async () => {
       await startAndStop(async ({ client }) => {
-        await client.submitTalk(
-          SubmitTalkCommand.createTestInstance({ title: "Foo" }),
-        );
-        await client.addComment(
-          AddCommentCommand.createTestInstance({ title: "Foo" }),
-        );
-        await client.submitTalk(
-          SubmitTalkCommand.createTestInstance({ title: "Bar" }),
-        );
+        await client.submitTalk(createTestSubmitTalkCommand({ title: "Foo" }));
+        await client.addComment(createTestAddCommentCommand({ title: "Foo" }));
+        await client.submitTalk(createTestSubmitTalkCommand({ title: "Bar" }));
 
         const result = await client.getTalks();
 
         expect(result).toEqual(
-          TalksQueryResult.createTestInstance({
+          createTestTalksQueryResult({
             talks: [
-              Talk.createTestInstanceWithComment({ title: "Foo" }),
-              Talk.createTestInstance({ title: "Bar" }),
+              createTestTalkWithComment({ title: "Foo" }),
+              createTestTalk({ title: "Bar" }),
             ],
           }),
         );
@@ -161,23 +151,23 @@ describe("Application", () => {
 
     it("Returns a single talk when client asks for a specific talk", async () => {
       await startAndStop(async ({ client }) => {
-        await client.submitTalk(SubmitTalkCommand.createTestInstance());
+        await client.submitTalk(createTestSubmitTalkCommand());
 
-        const result = await client.getTalks(TalksQuery.createTestInstance());
+        const result = await client.getTalks(createTestTalksQuery());
 
-        expect(result).toEqual(TalksQueryResult.createTestInstance());
+        expect(result).toEqual(createTestTalksQueryResult());
       });
     });
 
     it("Returns no talk when client asks for a specific talk that does not exist", async () => {
       await startAndStop(async ({ client }) => {
-        await client.submitTalk(SubmitTalkCommand.createTestInstance());
+        await client.submitTalk(createTestSubmitTalkCommand());
 
         const result = await client.getTalks(
-          TalksQuery.create({ title: "Non existing talk" }),
+          validateTalksQuery({ title: "Non existing talk" }),
         );
 
-        expect(result).toEqual(TalksQueryResult.create());
+        expect(result).toEqual({ talks: [] });
       });
     });
   });
@@ -256,9 +246,9 @@ class ServiceClient {
       .set("Content-Type", "application/json")
       .send({ presenter: command.presenter, summary: command.summary });
     if (response.noContent) {
-      return CommandStatus.success();
+      return success();
     }
-    return CommandStatus.failure(response.text);
+    return failure(response.text);
   }
 
   async addComment(command) {
@@ -267,9 +257,9 @@ class ServiceClient {
       .set("Content-Type", "application/json")
       .send(command.comment);
     if (response.noContent) {
-      return CommandStatus.success();
+      return success();
     }
-    return CommandStatus.failure(response.text);
+    return failure(response.text);
   }
 
   async deleteTalk(command) {
@@ -277,9 +267,9 @@ class ServiceClient {
       .delete(`/api/talks/${encodeURIComponent(command.title)}`)
       .send();
     if (response.noContent) {
-      return CommandStatus.success();
+      return success();
     }
-    return CommandStatus.failure(response.text);
+    return failure(response.text);
   }
 
   async getTalks(query) {
@@ -288,10 +278,10 @@ class ServiceClient {
         .get(`/api/talks/${encodeURIComponent(query.title)}`)
         .set("Accept", "application/json");
       if (response.ok) {
-        return TalksQueryResult.create({ talks: [response.body] });
+        return validateTalksQueryResult({ talks: [response.body] });
       }
       if (response.notFound) {
-        return TalksQueryResult.create({ talks: [] });
+        return validateTalksQueryResult({ talks: [] });
       }
     }
 
@@ -299,7 +289,7 @@ class ServiceClient {
       .get("/api/talks")
       .set("Accept", "application/json");
     if (response.ok) {
-      return TalksQueryResult.create({ talks: response.body });
+      return validateTalksQueryResult({ talks: response.body });
     }
 
     return null;

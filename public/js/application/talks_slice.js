@@ -3,9 +3,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { TalksUpdatedEvent } from "../infrastructure/api.js";
 import {
-  AddCommentCommand,
-  DeleteTalkCommand,
-  SubmitTalkCommand,
+  validateAddCommentCommand,
+  validateDeleteTalkCommand,
+  validateSubmitTalkCommand,
 } from "../domain/messages.js";
 import { Comment } from "../domain/talks.js";
 
@@ -40,7 +40,7 @@ const submitTalk = createAsyncThunk(
   async ({ title, summary }, thunkApi) => {
     const { api } = thunkApi.extra;
     const presenter = selectUser(thunkApi.getState());
-    const command = SubmitTalkCommand.create({
+    const command = validateSubmitTalkCommand({
       title,
       presenter,
       summary,
@@ -54,7 +54,7 @@ const addComment = createAsyncThunk(
   async ({ title, message }, thunkApi) => {
     const { api } = thunkApi.extra;
     const author = selectUser(thunkApi.getState());
-    const command = AddCommentCommand.create({
+    const command = validateAddCommentCommand({
       title,
       comment: Comment.create({ author, message }),
     });
@@ -66,7 +66,7 @@ const deleteTalk = createAsyncThunk(
   "talks/deleteTalk",
   async ({ title }, thunkApi) => {
     const { api } = thunkApi.extra;
-    const command = DeleteTalkCommand.create({ title });
+    const command = validateDeleteTalkCommand({ title });
     return api.deleteTalk(command);
   },
 );
