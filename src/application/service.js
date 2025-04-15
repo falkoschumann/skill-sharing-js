@@ -3,10 +3,10 @@
 import {
   failure,
   success,
+  validateSubmitTalkCommand,
   validateTalksQueryResult,
 } from "../../public/js/domain/messages.js";
-import { Talk } from "../../public/js/domain/talks.js";
-import { Repository } from "../infrastructure/repository.js";
+import { Repository } from "../infrastructure/repository.js"; // TODO Handle errors
 
 // TODO Handle errors
 // TODO Add logging
@@ -33,21 +33,21 @@ export class Service extends EventTarget {
   }
 
   async submitTalk(command) {
-    const talk = Talk.create(command);
-    await this.#repository.addOrUpdate(talk);
+    const talk = validateSubmitTalkCommand(command);
+    await this.#repository.addOrUpdate({ ...talk, comments: [] });
     this.dispatchEvent(new Event(TALKS_CHANGED_EVENT));
     return success();
   }
 
   async addComment(command) {
-    const talk = await this.#repository.findByTitle(command.title);
+    let talk = await this.#repository.findByTitle(command.title);
     if (talk == null) {
       return failure(
         `The comment cannot be added because the talk "${command.title}" does not exist.`,
       );
     }
 
-    talk.addComment(command.comment);
+    talk = { ...talk, comments: [...talk.comments, command.comment] };
     await this.#repository.addOrUpdate(talk);
     this.dispatchEvent(new Event(TALKS_CHANGED_EVENT));
     return success();

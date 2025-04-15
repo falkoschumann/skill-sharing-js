@@ -14,10 +14,10 @@ import {
   start,
   submitTalk,
 } from "../../../public/js/application/talks_slice.js";
-import { Talk } from "../../../public/js/domain/talks.js";
 import { User } from "../../../public/js/domain/users.js";
 import { Api } from "../../../public/js/infrastructure/api.js";
 import { Repository } from "../../../public/js/infrastructure/repository.js";
+import { createTestTalk } from "../../data/testdata.js";
 
 describe("Store", () => {
   describe("Change user", () => {
@@ -107,11 +107,9 @@ describe("Store", () => {
       const { store, api } = configure();
 
       await store.dispatch(start());
-      api.simulateMessage(JSON.stringify([Talk.createTestInstance()]));
+      api.simulateMessage(JSON.stringify([createTestTalk()]));
 
-      expect(selectTalks(store.getState())).toEqual([
-        Talk.createTestInstance(),
-      ]);
+      expect(selectTalks(store.getState())).toEqual([createTestTalk()]);
     });
   });
 });

@@ -4,14 +4,15 @@
 
 import { describe, expect, it } from "vitest";
 
-import { Comment, Talk } from "../../../public/js/domain/talks.js";
 import {
   validateAddCommentCommand,
   validateDeleteTalkCommand,
   validateSubmitTalkCommand,
 } from "../../../public/js/domain/messages.js";
+import { validateComment } from "../../../public/js/domain/talks.js";
 import { Api } from "../../../public/js/infrastructure/api.js";
 import { SseClient } from "../../../public/js/infrastructure/sse-client.js";
+import { createTestTalk } from "../../data/testdata.js";
 
 describe("API", () => {
   it("Gets talks", async () => {
@@ -23,12 +24,12 @@ describe("API", () => {
     api.addEventListener("talks-updated", (event) => events.push(event));
 
     await api.connect();
-    sseClient.simulateMessage(JSON.stringify([Talk.createTestInstance()]));
+    sseClient.simulateMessage(JSON.stringify([createTestTalk()]));
     await result;
 
     expect(events).toEqual([
       expect.objectContaining({
-        talks: [Talk.createTestInstance()],
+        talks: [createTestTalk()],
       }),
     ]);
   });
@@ -57,7 +58,7 @@ describe("API", () => {
     await api.addComment(
       validateAddCommentCommand({
         title: "title-1",
-        comment: Comment.create({
+        comment: validateComment({
           author: "author-1",
           message: "message-1",
         }),

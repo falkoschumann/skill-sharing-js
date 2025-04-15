@@ -3,7 +3,7 @@
 import fsPromise from "node:fs/promises";
 import path from "node:path";
 
-import { Talk } from "../../public/js/domain/talks.js";
+import { validateTalk } from "../../public/js/domain/talks.js";
 
 export class RepositoryConfiguration {
   static create({
@@ -53,7 +53,7 @@ export class Repository {
       return;
     }
 
-    return Talk.create(talk);
+    return validateTalk(talk);
   }
 
   async addOrUpdate(talk) {
@@ -114,7 +114,7 @@ class TalksDto {
   }
 
   validate() {
-    return Object.values(this).map((talk) => Talk.create(talk));
+    return Object.values(this).map((talk) => validateTalk(talk));
   }
 }
 

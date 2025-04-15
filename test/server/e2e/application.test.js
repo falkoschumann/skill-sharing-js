@@ -17,10 +17,10 @@ import {
   validateTalksQuery,
   validateTalksQueryResult,
 } from "../../../public/js/domain/messages.js";
-import { Comment, Talk } from "../../../public/js/domain/talks.js";
 import { RepositoryConfiguration } from "../../../src/infrastructure/repository.js";
 import {
   createTestAddCommentCommand,
+  createTestComment,
   createTestDeleteTalkCommand,
   createTestSubmitTalkCommand,
   createTestTalk,
@@ -96,7 +96,7 @@ describe("Application", () => {
 
         const status = await client.addComment(
           createTestAddCommentCommand({
-            comment: Comment.createTestInstance({ author: null }),
+            comment: createTestComment({ author: null }),
           }),
         );
 
@@ -192,7 +192,7 @@ describe("Application", () => {
         await submitTalk(url);
         const talks = await talksPromise;
 
-        expect(talks).toEqual([[], [Talk.createTestInstance()]]);
+        expect(talks).toEqual([[], [createTestTalk()]]);
       });
     });
   });
@@ -296,7 +296,7 @@ class ServiceClient {
   }
 }
 
-async function submitTalk(url, talk = Talk.createTestInstance()) {
+async function submitTalk(url, talk = createTestTalk()) {
   return await request(url)
     .put(`/api/talks/${encodeURIComponent(talk.title)}`)
     .set("Content-Type", "application/json")

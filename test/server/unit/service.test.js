@@ -8,7 +8,6 @@ import {
   validateTalksQuery,
   validateTalksQueryResult,
 } from "../../../public/js/domain/messages.js";
-import { Talk } from "../../../public/js/domain/talks.js";
 import { Service } from "../../../src/application/service.js";
 import { Repository } from "../../../src/infrastructure/repository.js";
 import {
@@ -16,6 +15,7 @@ import {
   createTestDeleteTalkCommand,
   createTestSubmitTalkCommand,
   createTestTalk,
+  createTestTalkWithComment,
 } from "../../data/testdata.js";
 
 describe("Service", () => {
@@ -27,26 +27,26 @@ describe("Service", () => {
 
       expect(status).toEqual(success());
       const talks = await repository.findAll();
-      expect(talks).toEqual([Talk.createTestInstance()]);
+      expect(talks).toEqual([createTestTalk()]);
     });
   });
 
   describe("Add comment", () => {
     it("Adds comment to talk", async () => {
       const { service, repository } = configure({
-        talks: [Talk.createTestInstance()],
+        talks: [createTestTalk()],
       });
 
       const status = await service.addComment(createTestAddCommentCommand());
 
       expect(status).toEqual(success());
       const talks = await repository.findAll();
-      expect(talks).toEqual([Talk.createTestInstanceWithComment()]);
+      expect(talks).toEqual([createTestTalkWithComment()]);
     });
 
     it("Reports an error when talk does not exist", async () => {
       const { service, repository } = configure({
-        talks: [Talk.createTestInstance()],
+        talks: [createTestTalk()],
       });
 
       const status = await service.addComment(
@@ -61,14 +61,14 @@ describe("Service", () => {
         ),
       );
       const talks = await repository.findAll();
-      expect(talks).toEqual([Talk.createTestInstance()]);
+      expect(talks).toEqual([createTestTalk()]);
     });
   });
 
   describe("Delete talk", () => {
     it("Removes talk from list", async () => {
       const { service, repository } = configure({
-        talks: [Talk.createTestInstance()],
+        talks: [createTestTalk()],
       });
 
       const status = await service.deleteTalk(createTestDeleteTalkCommand());
@@ -103,8 +103,8 @@ describe("Service", () => {
       expect(result).toEqual(
         validateTalksQueryResult({
           talks: [
-            Talk.createTestInstance({ title: "Foo" }),
-            Talk.createTestInstance({ title: "Bar" }),
+            createTestTalk({ title: "Foo" }),
+            createTestTalk({ title: "Bar" }),
           ],
         }),
       );
@@ -124,7 +124,7 @@ describe("Service", () => {
 
       expect(result).toEqual(
         validateTalksQueryResult({
-          talks: [Talk.createTestInstance({ title: "Foo" })],
+          talks: [createTestTalk({ title: "Foo" })],
         }),
       );
     });

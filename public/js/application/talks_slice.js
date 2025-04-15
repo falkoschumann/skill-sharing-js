@@ -7,7 +7,7 @@ import {
   validateDeleteTalkCommand,
   validateSubmitTalkCommand,
 } from "../domain/messages.js";
-import { Comment } from "../domain/talks.js";
+import { validateComment } from "../domain/talks.js";
 
 const initialState = {
   talks: [],
@@ -56,7 +56,7 @@ const addComment = createAsyncThunk(
     const author = selectUser(thunkApi.getState());
     const command = validateAddCommentCommand({
       title,
-      comment: Comment.create({ author, message }),
+      comment: validateComment({ author, message }),
     });
     return api.addComment(command);
   },

@@ -4,8 +4,11 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { Talk } from "../../../public/js/domain/talks.js";
 import { Repository } from "../../../src/infrastructure/repository.js";
+import {
+  createTestTalk,
+  createTestTalkWithComment,
+} from "../../data/testdata.js";
 
 const testFile = path.join(
   import.meta.dirname,
@@ -36,7 +39,7 @@ describe("Repository", () => {
 
       const talks = await repository.findAll();
 
-      expect(talks).toEqual([Talk.createTestInstanceWithComment()]);
+      expect(talks).toEqual([createTestTalkWithComment()]);
     });
 
     it("Returns empty list when file does not exist", async () => {
@@ -59,7 +62,7 @@ describe("Repository", () => {
   describe("Find by title", () => {
     it("Returns talk with title", async () => {
       const repository = Repository.create({ fileName: exampleFile });
-      const expectedTalk = Talk.createTestInstanceWithComment();
+      const expectedTalk = createTestTalkWithComment();
 
       const actualTalk = await repository.findByTitle(expectedTalk.title);
 
@@ -95,7 +98,7 @@ describe("Repository", () => {
     it("Creates file when file does not exist", async () => {
       const repository = Repository.create({ fileName: testFile });
 
-      const talk = Talk.createTestInstance();
+      const talk = createTestTalk();
       await repository.addOrUpdate(talk);
 
       const talks = await repository.findAll();
@@ -104,10 +107,10 @@ describe("Repository", () => {
 
     it("Adds talk when file exists", async () => {
       const repository = Repository.create({ fileName: testFile });
-      const talk1 = Talk.createTestInstance({ title: "Foo" });
+      const talk1 = createTestTalk({ title: "Foo" });
       await repository.addOrUpdate(talk1);
 
-      const talk2 = Talk.createTestInstance({ title: "Bar" });
+      const talk2 = createTestTalk({ title: "Bar" });
       await repository.addOrUpdate(talk2);
 
       const talks = await repository.findAll();
@@ -116,12 +119,12 @@ describe("Repository", () => {
 
     it("Updates talk when talk exists", async () => {
       const repository = Repository.create({ fileName: testFile });
-      const talk = Talk.createTestInstance({
+      const talk = createTestTalk({
         presenter: "Alice",
       });
       await repository.addOrUpdate(talk);
 
-      const updatedTalk = Talk.createTestInstance({ presenter: "Bob" });
+      const updatedTalk = createTestTalk({ presenter: "Bob" });
       await repository.addOrUpdate(updatedTalk);
 
       const talks = await repository.findAll();
@@ -131,7 +134,7 @@ describe("Repository", () => {
     it("Reports an error when file is corrupt", async () => {
       const repository = Repository.create({ fileName: corruptedFile });
 
-      const talk = Talk.createTestInstance();
+      const talk = createTestTalk();
       const result = repository.addOrUpdate(talk);
 
       await expect(result).rejects.toThrow(SyntaxError);
@@ -141,7 +144,7 @@ describe("Repository", () => {
   describe("Remove", () => {
     it("Removes talk", async () => {
       const repository = Repository.create({ fileName: testFile });
-      const talk = Talk.createTestInstance();
+      const talk = createTestTalk();
       await repository.addOrUpdate(talk);
 
       await repository.remove(talk.title);
@@ -178,21 +181,21 @@ describe("Repository", () => {
 
     it("Initializes with talks", async () => {
       const repository = Repository.createNull({
-        talks: [Talk.createTestInstance()],
+        talks: [createTestTalk()],
       });
 
       const talks = await repository.findAll();
 
-      expect(talks).toEqual([Talk.createTestInstance()]);
+      expect(talks).toEqual([createTestTalk()]);
     });
 
     it("Writes and reads talks", async () => {
       const repository = Repository.createNull();
 
-      await repository.addOrUpdate(Talk.createTestInstance());
+      await repository.addOrUpdate(createTestTalk());
       const talks = await repository.findAll();
 
-      expect(talks).toEqual([Talk.createTestInstance()]);
+      expect(talks).toEqual([createTestTalk()]);
     });
   });
 });

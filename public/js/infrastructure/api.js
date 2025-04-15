@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Falko Schumann. All rights reserved. MIT license.
 
 import { SseClient } from "./sse-client.js";
-import { Talk } from "../domain/talks.js";
+import { validateTalk } from "../domain/talks.js";
 import { OutputTracker } from "../util/output-tracker.js";
 
 const BASE_URL = "/api/talks";
@@ -19,7 +19,7 @@ export class TalksUpdatedEvent extends Event {
   }
 }
 
-// TODO validate responses (command status, query result)
+// TODO validate responses (command status', query results, events)
 
 export class Api extends EventTarget {
   static create() {
@@ -110,7 +110,7 @@ export class Api extends EventTarget {
 
   #handleMessage(event) {
     const dtos = JSON.parse(event.data);
-    const talks = dtos.map((dto) => Talk.create(dto));
+    const talks = dtos.map((dto) => validateTalk(dto));
     this.dispatchEvent(new TalksUpdatedEvent(talks));
   }
 }
