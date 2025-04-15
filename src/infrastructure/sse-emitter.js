@@ -13,7 +13,6 @@ export class SseEmitter {
   }
 
   extendResponse(outputMessage) {
-    // TODO check HTTP version, is it HTTP/2 when using EventSource?
     outputMessage.statusCode = 200;
     this.#response = outputMessage
       .setHeader("Content-Type", "text/event-stream")
