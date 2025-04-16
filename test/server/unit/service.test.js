@@ -98,7 +98,7 @@ describe("Service", () => {
         ],
       });
 
-      const result = await service.getTalks(validateTalksQuery());
+      const result = await service.getTalks(validateTalksQuery({}));
 
       expect(result).toEqual(
         validateTalksQueryResult({

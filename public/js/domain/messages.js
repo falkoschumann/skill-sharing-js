@@ -2,8 +2,6 @@
 
 import { validateComment, validateTalk } from "./talks.js";
 
-// TODO write tests
-
 export function success() {
   return { isSuccess: true };
 }
@@ -59,7 +57,8 @@ export function validateCommandStatus(status) {
   if (
     status == null ||
     typeof status.isSuccess !== "boolean" ||
-    (status.errorMessage != null && typeof status.errorMessage !== "string")
+    (status.isSuccess && status.errorMessage != null) ||
+    (!status.isSuccess && typeof status.errorMessage !== "string")
   ) {
     return false;
   }
@@ -71,7 +70,10 @@ export function validateCommandStatus(status) {
 }
 
 export function validateTalksQuery(query) {
-  if (query == null || typeof query.title !== "string") {
+  if (
+    query == null ||
+    (query.title != null && typeof query.title !== "string")
+  ) {
     return false;
   }
 

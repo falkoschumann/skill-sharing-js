@@ -62,7 +62,8 @@ export class TalksController {
 
   async #putTalk(request, response) {
     const title = decodeURIComponent(request.params.title);
-    const command = validateSubmitTalkCommand({ ...request.body, title });
+    const body = request.body;
+    const command = validateSubmitTalkCommand({ ...body, title });
     if (!command) {
       response
         .status(400)
