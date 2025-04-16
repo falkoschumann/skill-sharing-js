@@ -29,7 +29,7 @@ export class TalksController {
         : undefined;
     const query = validateTalksQuery({ title });
     if (query.title != null) {
-      const result = await this.#services.getTalks(query);
+      const result = await this.#services.queryTalks(query);
       if (result.talks.length > 0) {
         response.status(200).send(result.talks[0]);
       } else {
@@ -41,7 +41,7 @@ export class TalksController {
     } else if (request.headers.accept === "text/event-stream") {
       await this.#eventStreamTalks(request, response);
     } else {
-      const result = await this.#services.getTalks();
+      const result = await this.#services.queryTalks();
       response.status(200).send(result.talks);
     }
   }
@@ -56,7 +56,7 @@ export class TalksController {
   }
 
   async #sendTalksUpdatedEvent(emitter) {
-    const result = await this.#services.getTalks();
+    const result = await this.#services.queryTalks();
     emitter.send({ data: result.talks });
   }
 

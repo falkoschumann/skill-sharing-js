@@ -1,16 +1,7 @@
 // Copyright (c) 2025 Falko Schumann. All rights reserved. MIT license.
 
-import {
-  failure,
-  success,
-  validateSubmitTalkCommand,
-  validateTalksQueryResult,
-} from "../../public/js/domain/messages.js";
-import { Repository } from "../infrastructure/repository.js"; // TODO Handle errors
-
-// TODO Handle errors
-// TODO Add logging
-// TODO Add validation
+import { failure, success } from "../../public/js/domain/messages.js";
+import { Repository } from "../infrastructure/repository.js";
 
 export const TALKS_CHANGED_EVENT = "talks-changed";
 
@@ -33,13 +24,16 @@ export class Service extends EventTarget {
   }
 
   async submitTalk(command) {
-    const talk = validateSubmitTalkCommand(command);
-    await this.#repository.addOrUpdate({ ...talk, comments: [] });
+    console.log("Submit talk", command);
+
+    await this.#repository.addOrUpdate({ ...command, comments: [] });
     this.dispatchEvent(new Event(TALKS_CHANGED_EVENT));
     return success();
   }
 
   async addComment(command) {
+    console.log("Add comment", command);
+
     let talk = await this.#repository.findByTitle(command.title);
     if (talk == null) {
       return failure(
@@ -54,19 +48,23 @@ export class Service extends EventTarget {
   }
 
   async deleteTalk(command) {
+    console.log("Delete talk", command);
+
     await this.#repository.remove(command.title);
     this.dispatchEvent(new Event(TALKS_CHANGED_EVENT));
     return success();
   }
 
-  async getTalks(query) {
+  async queryTalks(query) {
+    console.log("Query talks", query);
+
     if (query?.title != null) {
       const talk = await this.#repository.findByTitle(query.title);
       const talks = talk ? [talk] : [];
-      return validateTalksQueryResult({ talks });
+      return { talks };
     }
 
     const talks = await this.#repository.findAll();
-    return validateTalksQueryResult({ talks });
+    return { talks };
   }
 }

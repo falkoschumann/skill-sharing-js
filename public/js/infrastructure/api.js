@@ -1,7 +1,6 @@
 // Copyright (c) 2025 Falko Schumann. All rights reserved. MIT license.
 
 import { SseClient } from "./sse-client.js";
-import { validateTalk } from "../domain/talks.js";
 import { OutputTracker } from "../util/output-tracker.js";
 
 const BASE_URL = "/api/talks";
@@ -18,8 +17,6 @@ export class TalksUpdatedEvent extends Event {
     this.talks = talks;
   }
 }
-
-// TODO validate responses (command status', query results, events)
 
 export class Api extends EventTarget {
   static create() {
@@ -57,6 +54,7 @@ export class Api extends EventTarget {
   }
 
   async submitTalk(command) {
+    // TODO validate command status
     const body = JSON.stringify(command);
     await this.#fetch(`${BASE_URL}/${encodeURIComponent(command.title)}`, {
       method: "PUT",
@@ -75,6 +73,7 @@ export class Api extends EventTarget {
   }
 
   async addComment(command) {
+    // TODO validate command status
     const body = JSON.stringify(command.comment);
     await this.#fetch(
       `${BASE_URL}/${encodeURIComponent(command.title)}/comments`,
@@ -96,6 +95,7 @@ export class Api extends EventTarget {
   }
 
   async deleteTalk(command) {
+    // TODO validate command status
     await this.#fetch(`${BASE_URL}/${encodeURIComponent(command.title)}`, {
       method: "DELETE",
     });
@@ -109,8 +109,9 @@ export class Api extends EventTarget {
   }
 
   #handleMessage(event) {
-    const dtos = JSON.parse(event.data);
-    const talks = dtos.map((dto) => validateTalk(dto));
+    // TODO validate query result
+    // TODO use query result as event
+    const talks = JSON.parse(event.data);
     this.dispatchEvent(new TalksUpdatedEvent(talks));
   }
 }

@@ -41,7 +41,7 @@ describe("Application", () => {
         const status = await client.submitTalk(createTestSubmitTalkCommand());
 
         expect(status).toEqual(success());
-        const result = await client.getTalks();
+        const result = await client.queryTalks();
         expect(result).toEqual(createTestTalksQueryResult());
       });
     });
@@ -53,7 +53,7 @@ describe("Application", () => {
         );
 
         expect(status).toEqual(failure("Bad submit talk command."));
-        const result = await client.getTalks();
+        const result = await client.queryTalks();
         expect(result).toEqual({ talks: [] });
       });
     });
@@ -67,7 +67,7 @@ describe("Application", () => {
         const status = await client.addComment(createTestAddCommentCommand());
 
         expect(status).toEqual(success());
-        const result = await client.getTalks();
+        const result = await client.queryTalks();
         expect(result).toEqual(createTestTalksQueryResultWithComment());
       });
     });
@@ -136,7 +136,7 @@ describe("Application", () => {
         await client.addComment(createTestAddCommentCommand({ title: "Foo" }));
         await client.submitTalk(createTestSubmitTalkCommand({ title: "Bar" }));
 
-        const result = await client.getTalks();
+        const result = await client.queryTalks();
 
         expect(result).toEqual(
           createTestTalksQueryResult({
@@ -153,7 +153,7 @@ describe("Application", () => {
       await startAndStop(async ({ client }) => {
         await client.submitTalk(createTestSubmitTalkCommand());
 
-        const result = await client.getTalks(createTestTalksQuery());
+        const result = await client.queryTalks(createTestTalksQuery());
 
         expect(result).toEqual(createTestTalksQueryResult());
       });
@@ -163,7 +163,7 @@ describe("Application", () => {
       await startAndStop(async ({ client }) => {
         await client.submitTalk(createTestSubmitTalkCommand());
 
-        const result = await client.getTalks(
+        const result = await client.queryTalks(
           validateTalksQuery({ title: "Non existing talk" }),
         );
 
@@ -218,13 +218,6 @@ async function startAndStop(run) {
   const client = new ServiceClient(url);
   // TODO Remove dependency on eventsource when Node.js supports it
   const source = new EventSource(`${url}/api/talks`);
-  source.addEventListener("open", () => console.log("Event source opened"));
-  source.addEventListener("error", (error) =>
-    console.error("Event source error", error),
-  );
-  source.addEventListener("message", (event) =>
-    console.log("Event source message", event.data),
-  );
   try {
     await run({ url, client, source });
   } finally {
@@ -272,7 +265,7 @@ class ServiceClient {
     return failure(response.text);
   }
 
-  async getTalks(query) {
+  async queryTalks(query) {
     if (query?.title != null) {
       const response = await request(this.#url)
         .get(`/api/talks/${encodeURIComponent(query.title)}`)
