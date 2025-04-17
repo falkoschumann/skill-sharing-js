@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Falko Schumann. All rights reserved. MIT license.
 
-import { SseClient } from "./sse-client.js";
-import { OutputTracker } from "../util/output-tracker.js";
+import { SseClient } from "./sse_client.js";
+import { OutputTracker } from "../util/output_tracker.js";
 
 const BASE_URL = "/api/talks";
 

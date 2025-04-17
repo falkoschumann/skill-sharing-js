@@ -4,9 +4,9 @@ import { html } from "lit-html";
 
 import { start } from "../application/talks_slice.js";
 import { Container } from "./components.js";
-import "./talk-form.js";
+import "./talk_form.js";
 import "./talks.js";
-import "./user-field.js";
+import "./user_field.js";
 
 // TODO Refactor into ATOM architecture
 
