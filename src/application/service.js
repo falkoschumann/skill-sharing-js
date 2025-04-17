@@ -24,7 +24,7 @@ export class Service extends EventTarget {
   }
 
   async submitTalk(command) {
-    console.log("Submit talk", command);
+    console.info("Submit talk", command);
 
     await this.#repository.addOrUpdate({ ...command, comments: [] });
     this.dispatchEvent(new Event(TALKS_CHANGED_EVENT));
@@ -32,7 +32,7 @@ export class Service extends EventTarget {
   }
 
   async addComment(command) {
-    console.log("Add comment", command);
+    console.info("Add comment", command);
 
     let talk = await this.#repository.findByTitle(command.title);
     if (talk == null) {
@@ -48,7 +48,7 @@ export class Service extends EventTarget {
   }
 
   async deleteTalk(command) {
-    console.log("Delete talk", command);
+    console.info("Delete talk", command);
 
     await this.#repository.remove(command.title);
     this.dispatchEvent(new Event(TALKS_CHANGED_EVENT));
@@ -56,7 +56,7 @@ export class Service extends EventTarget {
   }
 
   async queryTalks(query) {
-    console.log("Query talks", query);
+    console.info("Query talks", query);
 
     if (query?.title != null) {
       const talk = await this.#repository.findByTitle(query.title);
