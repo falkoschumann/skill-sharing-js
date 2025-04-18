@@ -17,7 +17,7 @@ jobs:
       #          install-chromedriver: true
       #      - run: cat /etc/apparmor.d/chrome
       - name: Check chrome
-        uses: which chrome
+        run: which chrome
       - name: Checkout source code
         uses: actions/checkout@v4
       - name: Set up Node.js ${{ matrix.node-version }}
