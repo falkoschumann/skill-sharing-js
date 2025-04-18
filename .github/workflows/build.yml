@@ -15,6 +15,7 @@ jobs:
         with:
           chrome-version: stable
           install-chromedriver: true
+      - run: cat /etc/apparmor.d/chrome
       - name: Checkout source code
         uses: actions/checkout@v4
       - name: Set up Node.js ${{ matrix.node-version }}
