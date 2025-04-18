@@ -130,16 +130,18 @@ class SkillSharing {
     const lastTalkTitle = await this.#page.waitForSelector(
       "s-talks > section:last-child h2",
     );
-    expect(await lastTalkTitle.evaluate((node) => node.textContent)).toContain(
-      title,
+    const actualTitle = await lastTalkTitle.evaluate(
+      (node) => node.textContent,
     );
+    expect(actualTitle).toContain(title);
 
     const lastTalkSummary = await this.#page.waitForSelector(
       "s-talks > section:last-child p",
     );
-    expect(
-      await lastTalkSummary.evaluate((node) => node.textContent),
-    ).toContain(summary);
+    const actualSummary = await lastTalkSummary.evaluate(
+      (node) => node.textContent,
+    );
+    expect(actualSummary).toContain(summary);
   }
 
   async verifyCommentAdded({ author, comment }) {

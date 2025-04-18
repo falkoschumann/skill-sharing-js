@@ -9,6 +9,7 @@ import {
   validateTalksQueryResult,
 } from "../../../public/js/domain/messages.js";
 import { Service } from "../../../src/application/service.js";
+import { ConsoleGateway } from "../../../public/js/infrastructure/console_gateway.js";
 import { Repository } from "../../../src/infrastructure/repository.js";
 import {
   createTestAddCommentCommand,
@@ -133,6 +134,6 @@ describe("Service", () => {
 
 function configure({ talks } = {}) {
   const repository = Repository.createNull({ talks });
-  const service = new Service(repository);
+  const service = new Service(repository, ConsoleGateway.createNull());
   return { service, repository };
 }

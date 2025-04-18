@@ -2,29 +2,32 @@
 
 import { failure, success } from "../../public/js/domain/messages.js";
 import { Repository } from "../infrastructure/repository.js";
+import { ConsoleGateway } from "../../public/js/infrastructure/console_gateway.js";
 
 export const TALKS_CHANGED_EVENT = "talks-changed";
 
 export class Service extends EventTarget {
   static create(configuration) {
     const repository = Repository.create(configuration.repository);
-    return new Service(repository);
+    return new Service(repository, ConsoleGateway.create());
   }
 
   static createNull({ talks } = {}) {
     const repository = Repository.createNull({ talks });
-    return new Service(repository);
+    return new Service(repository, ConsoleGateway.createNull());
   }
 
   #repository;
+  #console;
 
-  constructor(repository) {
+  constructor(repository, console) {
     super();
     this.#repository = repository;
+    this.#console = console;
   }
 
   async submitTalk(command) {
-    console.info("Submit talk", command);
+    this.#console.info("Submit talk", command);
 
     await this.#repository.addOrUpdate({ ...command, comments: [] });
     this.dispatchEvent(new Event(TALKS_CHANGED_EVENT));
@@ -32,7 +35,7 @@ export class Service extends EventTarget {
   }
 
   async addComment(command) {
-    console.info("Add comment", command);
+    this.#console.info("Add comment", command);
 
     let talk = await this.#repository.findByTitle(command.title);
     if (talk == null) {
@@ -48,7 +51,7 @@ export class Service extends EventTarget {
   }
 
   async deleteTalk(command) {
-    console.info("Delete talk", command);
+    this.#console.info("Delete talk", command);
 
     await this.#repository.remove(command.title);
     this.dispatchEvent(new Event(TALKS_CHANGED_EVENT));
@@ -56,7 +59,7 @@ export class Service extends EventTarget {
   }
 
   async queryTalks(query) {
-    console.info("Query talks", query);
+    this.#console.info("Query talks", query);
 
     if (query?.title != null) {
       const talk = await this.#repository.findByTitle(query.title);

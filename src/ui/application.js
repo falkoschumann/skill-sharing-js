@@ -6,6 +6,7 @@ import { Service } from "../application/service.js";
 import { RepositoryConfiguration } from "../infrastructure/repository.js";
 import { TalksController } from "./talks-controller.js";
 import { StaticFilesController } from "./static-files-controller.js";
+import { ConsoleGateway } from "../../public/js/infrastructure/console_gateway.js";
 
 export class SkillSharingConfiguration {
   static create({
@@ -38,15 +39,21 @@ export class ServerConfiguration {
 export class SkillSharingApplication {
   static create(configuration = SkillSharingConfiguration.create()) {
     const service = Service.create(configuration);
-    return new SkillSharingApplication(configuration.server, service);
+    return new SkillSharingApplication(
+      configuration.server,
+      service,
+      ConsoleGateway.create(),
+    );
   }
 
   #configuration;
+  #console;
   #app;
   #server;
 
-  constructor(configuration, service) {
+  constructor(configuration, service, console) {
     this.#configuration = configuration;
+    this.#console = console;
 
     this.#app = express();
     this.#app.set("x-powered-by", false);
@@ -56,21 +63,21 @@ export class SkillSharingApplication {
   }
 
   async start() {
-    console.info("Starting server...");
+    this.#console.info("Starting server...");
     const { address, port } = this.#configuration;
     await new Promise((resolve) => {
       this.#server = this.#app.listen(port, address);
       this.#server.on("listening", () => resolve());
     });
-    console.info(`Server is listening on ${address}:${port}.`);
+    this.#console.info(`Server is listening on ${address}:${port}.`);
   }
 
   async stop() {
-    console.info("Stopping server...");
+    this.#console.info("Stopping server...");
     await new Promise((resolve) => {
       this.#server.on("close", () => resolve());
       this.#server.close();
     });
-    console.info("Server stopped.");
+    this.#console.info("Server stopped.");
   }
 }

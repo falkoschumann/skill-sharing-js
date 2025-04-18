@@ -175,9 +175,6 @@ describe("Application", () => {
   describe("Receive talk updates", () => {
     it("Receives talk updates", async () => {
       await startAndStop(async ({ url, source }) => {
-        await new Promise((resolve) =>
-          source.addEventListener("open", resolve),
-        );
         const talksPromise = new Promise((resolve) => {
           const data = [];
           source.addEventListener("message", (event) => {
@@ -218,6 +215,7 @@ async function startAndStop(run) {
   const client = new ServiceClient(url);
   // TODO Remove dependency on eventsource when Node.js supports it
   const source = new EventSource(`${url}/api/talks`);
+  await new Promise((resolve) => source.addEventListener("open", resolve));
   try {
     await run({ url, client, source });
   } finally {

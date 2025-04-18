@@ -49,7 +49,7 @@ export class TalksController {
   async #eventStreamTalks(request, response) {
     const emitter = new SseEmitter();
     emitter.extendResponse(response);
-    this.#services.addEventListener(TALKS_CHANGED_EVENT, async () =>
+    this.#services.addEventListener(TALKS_CHANGED_EVENT, () =>
       this.#sendTalksUpdatedEvent(emitter),
     );
     await this.#sendTalksUpdatedEvent(emitter);
