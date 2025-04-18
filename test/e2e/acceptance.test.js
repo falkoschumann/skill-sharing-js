@@ -56,10 +56,7 @@ async function startAndStop(run) {
 
   const application = SkillSharingApplication.create(configuration);
   await application.start();
-  // FIXME https://pptr.dev/troubleshooting#setting-up-chrome-linux-sandbox
-  const browser = await puppeteer.launch({
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-  });
+  const browser = await puppeteer.launch();
   try {
     await run(browser);
   } finally {
