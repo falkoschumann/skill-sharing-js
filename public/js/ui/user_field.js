@@ -2,18 +2,23 @@
 
 import { html } from "lit-html";
 
-import { changeUser, selectUser } from "../application/talks_slice.js";
-import { Container } from "./components.js";
+import { Component } from "./components.js";
 
-class UserFieldComponent extends Container {
+class UserFieldComponent extends Component {
+  #username;
+
+  get username() {
+    return this.#username;
+  }
+
+  set username(value) {
+    this.#username = value;
+    this.updateView();
+  }
+
   constructor() {
     super();
     this.className = "d-block mb-4";
-    this.state = "";
-  }
-
-  extractState(state) {
-    return selectUser(state);
   }
 
   getView() {
@@ -26,9 +31,13 @@ class UserFieldComponent extends Container {
           name="username"
           autocomplete="username"
           class="form-control"
-          .value="${this.state}"
+          .value="${this.username}"
           @change=${(event) =>
-            this.dispatch(changeUser({ username: event.target.value }))}
+            this.dispatchEvent(
+              new CustomEvent("nameChanged", {
+                detail: { username: event.target.value },
+              }),
+            )}
         />
       </div>
     `;

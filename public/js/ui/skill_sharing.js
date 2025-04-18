@@ -2,13 +2,17 @@
 
 import { html } from "lit-html";
 
-import { start } from "../application/talks_slice.js";
+import {
+  addComment,
+  changeUser,
+  deleteTalk,
+  start,
+  submitTalk,
+} from "../application/talks_slice.js";
 import { Container } from "./components.js";
 import "./talk_form.js";
 import "./talks.js";
 import "./user_field.js";
-
-// TODO Refactor into ATOM architecture
 
 class SkillSharingComponent extends Container {
   constructor() {
@@ -21,12 +25,25 @@ class SkillSharingComponent extends Container {
     this.dispatch(start());
   }
 
+  extractState(state) {
+    return state.talks;
+  }
+
   getView() {
     return html`
       <h1>Skill Sharing</h1>
-      <s-user-field></s-user-field>
-      <s-talks></s-talks>
-      <s-talk-form></s-talk-form>
+      <s-user-field
+        .username=${this.state.user}
+        @nameChanged=${(event) => this.dispatch(changeUser(event.detail))}
+      ></s-user-field>
+      <s-talks
+        .talks=${this.state.talks}
+        @commentAdded=${(event) => this.dispatch(addComment(event.detail))}
+        @talkDeleted=${(event) => this.dispatch(deleteTalk(event.detail))}
+      ></s-talks>
+      <s-talk-form
+        @talkSubmitted=${(event) => this.dispatch(submitTalk(event.detail))}
+      ></s-talk-form>
     `;
   }
 }

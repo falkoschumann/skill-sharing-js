@@ -2,10 +2,9 @@
 
 import { html } from "lit-html";
 
-import { addComment } from "../application/talks_slice.js";
-import { Container } from "./components.js";
+import { Component } from "./components.js";
 
-class CommentsComponent extends Container {
+class CommentsComponent extends Component {
   #talk;
 
   get talk() {
@@ -61,10 +60,12 @@ class CommentsComponent extends Container {
 
   #addComment(form) {
     const formData = new FormData(form);
-    this.dispatch(
-      addComment({
-        title: formData.get("talkTitle"),
-        message: formData.get("comment"),
+    this.dispatchEvent(
+      new CustomEvent("commentAdded", {
+        detail: {
+          title: formData.get("talkTitle"),
+          message: formData.get("comment"),
+        },
       }),
     );
     form.reset();

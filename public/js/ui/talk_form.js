@@ -2,10 +2,9 @@
 
 import { html } from "lit-html";
 
-import { submitTalk } from "../application/talks_slice.js";
-import { Container } from "./components.js";
+import { Component } from "./components.js";
 
-class TalkFormComponent extends Container {
+class TalkFormComponent extends Component {
   getView() {
     return html`
       <form @submit=${(e) => this.#formSubmitted(e)}>
@@ -50,10 +49,12 @@ class TalkFormComponent extends Container {
 
   #submitTalk(form) {
     const formData = new FormData(form);
-    this.dispatch(
-      submitTalk({
-        title: formData.get("title"),
-        summary: formData.get("summary"),
+    this.dispatchEvent(
+      new CustomEvent("talkSubmitted", {
+        detail: {
+          title: formData.get("title"),
+          summary: formData.get("summary"),
+        },
       }),
     );
     form.reset();

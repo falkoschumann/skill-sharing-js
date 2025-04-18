@@ -2,17 +2,23 @@
 
 import { html } from "lit-html";
 
-import { deleteTalk, selectTalks } from "../application/talks_slice.js";
-import { Container } from "./components.js";
+import { Component } from "./components.js";
 import "./comments.js";
 
-class TalksComponent extends Container {
-  extractState(state) {
-    return selectTalks(state);
+class TalksComponent extends Component {
+  #talks;
+
+  get talks() {
+    return this.#talks;
+  }
+
+  set talks(value) {
+    this.#talks = value;
+    this.updateView();
   }
 
   getView() {
-    return html`${this.state.map((talk) => this.#talkTemplate(talk))}`;
+    return html`${this.talks.map((talk) => this.#talkTemplate(talk))}`;
   }
 
   #talkTemplate(talk) {
@@ -22,14 +28,25 @@ class TalksComponent extends Container {
           ${talk.title}
           <button
             class="btn btn-secondary btn-sm"
-            @click=${() => this.dispatch(deleteTalk({ title: talk.title }))}
+            @click=${() =>
+              this.dispatchEvent(
+                new CustomEvent("talkDeleted", {
+                  detail: { title: talk.title },
+                }),
+              )}
           >
             Delete
           </button>
         </h2>
         <div>by <strong>${talk.presenter}</strong></div>
         <p>${talk.summary}</p>
-        <s-comments .talk=${talk}></s-comments>
+        <s-comments
+          .talk=${talk}
+          @commentAdded=${(event) =>
+            this.dispatchEvent(
+              new CustomEvent(event.type, { detail: event.detail }),
+            )}
+        ></s-comments>
       </section>
     `;
   }
