@@ -10,12 +10,14 @@ jobs:
       matrix:
         node-version: [20.x, 22.x, 23.x]
     steps:
-      - name: Setup Chromium
-        uses: browser-actions/setup-chromium@v1
-        with:
-          chrome-version: stable
-          install-chromedriver: true
-      - run: cat /etc/apparmor.d/chrome
+      #      - name: Setup Chromium
+      #        uses: browser-actions/setup-chrome@v1
+      #        with:
+      #          chrome-version: stable
+      #          install-chromedriver: true
+      #      - run: cat /etc/apparmor.d/chrome
+      - name: Check chrome
+        uses: which chrome
       - name: Checkout source code
         uses: actions/checkout@v4
       - name: Set up Node.js ${{ matrix.node-version }}
