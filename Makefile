@@ -9,6 +9,7 @@ all: dist check
 clean:
 	rm -rf coverage
 	rm -rf screenshots
+	rm -rf public/vendor
 
 distclean: clean
 	rm -rf node_modules
@@ -31,7 +32,7 @@ format:
 	npx eslint --fix .
 	npx prettier --write .
 
-dev: prepare
+dev: build
 	npx concurrently \
     		--kill-others \
     		--names "API,WEB" \
@@ -57,8 +58,8 @@ integration-tests: prepare
 e2e-tests: prepare
 	npx vitest run --testPathPattern=".*\/e2e\/.*"
 
-# TODO Use rollup to create vendor bundle for import map
 build: prepare
+	npx rollup -c
 
 prepare: version
 	@if [ -n "$(CI)" ] ; then \

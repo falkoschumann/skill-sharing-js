@@ -4,19 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Skill Sharing</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="./vendor/bootstrap.css" rel="stylesheet" />
     <script type="module" src="js/main.js"></script>
     <script type="importmap">
       {
         "imports": {
-          "lit-html": "https://cdn.jsdelivr.net/npm/lit-html@3.2.1/+esm",
-          "@reduxjs/toolkit": "https://cdn.jsdelivr.net/npm/@reduxjs/toolkit@2.6.1/+esm"
+          "lit-html": "./vendor/lit-html.js",
+          "@reduxjs/toolkit": "./vendor/redux-toolkit.js"
         }
       }
     </script>
   </head>
   <body>
     <s-skill-sharing></s-skill-sharing>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="./vendor/bootstrap.bundle.js"></script>
   </body>
 </html>

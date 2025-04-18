@@ -8,7 +8,7 @@ import * as wc from "eslint-plugin-wc";
 import globals from "globals";
 
 export default defineConfig([
-  globalIgnores(["coverage"]),
+  globalIgnores(["coverage/", "public/vendor/"]),
   js.configs.recommended,
   lit.configs["flat/recommended"],
   wc.configs["flat/recommended"],
