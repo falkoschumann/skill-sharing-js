@@ -56,13 +56,13 @@ export class Repository {
     return validateTalk(talk);
   }
 
-  async addOrUpdate(talk) {
+  async save(talk) {
     const talks = await this.#load();
     talks[talk.title] = talk;
     await this.#store(talks);
   }
 
-  async remove(title) {
+  async deleteByTitle(title) {
     const talks = await this.#load();
     delete talks[title];
     await this.#store(talks);

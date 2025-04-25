@@ -29,7 +29,7 @@ export class Service extends EventTarget {
   async submitTalk(command) {
     this.#console.info("Submit talk", command);
 
-    await this.#repository.addOrUpdate({ ...command, comments: [] });
+    await this.#repository.save({ ...command, comments: [] });
     this.dispatchEvent(new Event(TALKS_CHANGED_EVENT));
     return success();
   }
@@ -45,7 +45,7 @@ export class Service extends EventTarget {
     }
 
     talk = { ...talk, comments: [...talk.comments, command.comment] };
-    await this.#repository.addOrUpdate(talk);
+    await this.#repository.save(talk);
     this.dispatchEvent(new Event(TALKS_CHANGED_EVENT));
     return success();
   }
@@ -53,7 +53,7 @@ export class Service extends EventTarget {
   async deleteTalk(command) {
     this.#console.info("Delete talk", command);
 
-    await this.#repository.remove(command.title);
+    await this.#repository.deleteByTitle(command.title);
     this.dispatchEvent(new Event(TALKS_CHANGED_EVENT));
     return success();
   }

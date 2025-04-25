@@ -99,7 +99,7 @@ describe("Repository", () => {
       const repository = Repository.create({ fileName: testFile });
 
       const talk = createTestTalk();
-      await repository.addOrUpdate(talk);
+      await repository.save(talk);
 
       const talks = await repository.findAll();
       expect(talks).toEqual([talk]);
@@ -108,10 +108,10 @@ describe("Repository", () => {
     it("Adds talk when file exists", async () => {
       const repository = Repository.create({ fileName: testFile });
       const talk1 = createTestTalk({ title: "Foo" });
-      await repository.addOrUpdate(talk1);
+      await repository.save(talk1);
 
       const talk2 = createTestTalk({ title: "Bar" });
-      await repository.addOrUpdate(talk2);
+      await repository.save(talk2);
 
       const talks = await repository.findAll();
       expect(talks).toEqual([talk1, talk2]);
@@ -122,10 +122,10 @@ describe("Repository", () => {
       const talk = createTestTalk({
         presenter: "Alice",
       });
-      await repository.addOrUpdate(talk);
+      await repository.save(talk);
 
       const updatedTalk = createTestTalk({ presenter: "Bob" });
-      await repository.addOrUpdate(updatedTalk);
+      await repository.save(updatedTalk);
 
       const talks = await repository.findAll();
       expect(talks).toEqual([updatedTalk]);
@@ -135,7 +135,7 @@ describe("Repository", () => {
       const repository = Repository.create({ fileName: corruptedFile });
 
       const talk = createTestTalk();
-      const result = repository.addOrUpdate(talk);
+      const result = repository.save(talk);
 
       await expect(result).rejects.toThrow(SyntaxError);
     });
@@ -145,9 +145,9 @@ describe("Repository", () => {
     it("Removes talk", async () => {
       const repository = Repository.create({ fileName: testFile });
       const talk = createTestTalk();
-      await repository.addOrUpdate(talk);
+      await repository.save(talk);
 
-      await repository.remove(talk.title);
+      await repository.deleteByTitle(talk.title);
 
       const talks = await repository.findAll();
       expect(talks).toEqual([]);
@@ -156,7 +156,7 @@ describe("Repository", () => {
     it("Does not reports an error when file does not exist", async () => {
       const repository = Repository.create({ fileName: testFile });
 
-      const talks = await repository.remove("Any title");
+      const talks = await repository.deleteByTitle("Any title");
 
       expect(talks).toBeUndefined();
     });
@@ -164,7 +164,7 @@ describe("Repository", () => {
     it("Reports an error when file is corrupt", async () => {
       const repository = Repository.create({ fileName: corruptedFile });
 
-      const result = repository.remove("Any title");
+      const result = repository.deleteByTitle("Any title");
 
       await expect(result).rejects.toThrow(SyntaxError);
     });
@@ -192,7 +192,7 @@ describe("Repository", () => {
     it("Writes and reads talks", async () => {
       const repository = Repository.createNull();
 
-      await repository.addOrUpdate(createTestTalk());
+      await repository.save(createTestTalk());
       const talks = await repository.findAll();
 
       expect(talks).toEqual([createTestTalk()]);
