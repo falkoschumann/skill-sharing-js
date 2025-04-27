@@ -50,13 +50,13 @@ coverage: prepare
 	npx vitest --coverage
 
 unit-tests: prepare
-	npx vitest run --testPathPattern=".*\/unit\/.*"
+	npx vitest run unit
 
 integration-tests: prepare
-	npx vitest run --testPathPattern=".*\/integration\/.*"
+	npx vitest run integration
 
 e2e-tests: prepare
-	npx vitest run --testPathPattern=".*\/e2e\/.*"
+	npx vitest run e2e
 
 build: prepare
 	npx rollup -c
