@@ -35,7 +35,7 @@
     "nodemon": "3.1.9",
     "prettier": "3.5.3",
     "puppeteer": "24.6.1",
-    "rollup": "4.40.0",
+    "rollup": "4.40.1",
     "rollup-plugin-copy": "3.5.0",
     "supertest": "7.1.0",
     "vitest": "3.1.2"
