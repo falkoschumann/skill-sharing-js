@@ -32,7 +32,7 @@
     "eventsource": "3.0.6",
     "globals": "16.0.0",
     "jsdom": "26.1.0",
-    "nodemon": "3.1.9",
+    "nodemon": "3.1.10",
     "prettier": "3.5.3",
     "puppeteer": "24.6.1",
     "rollup": "4.40.1",
