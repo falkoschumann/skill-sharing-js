@@ -14,8 +14,8 @@ import { TalksApi } from "../../../public/js/infrastructure/talks_api.js";
 import { SseClient } from "../../../public/js/infrastructure/sse_client.js";
 import { createTestTalk } from "../../data/testdata.js";
 
-describe("API", () => {
-  it("Gets talks", async () => {
+describe("Talks API", () => {
+  it("Query talks", async () => {
     const { api, sseClient } = configure();
     const events = [];
     const result = new Promise((resolve) =>

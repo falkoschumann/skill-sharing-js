@@ -5,9 +5,9 @@ import { OutputTracker } from "../util/output_tracker.js";
 
 const BASE_URL = "/api/talks";
 
-export const TALK_SUBMITTED_EVENT = "talk-submitted";
-export const TALK_DELETED_EVENT = "talk-deleted";
-export const COMMENT_ADDED_EVENT = "comment-added";
+const TALK_SUBMITTED_EVENT = "talk-submitted";
+const TALK_DELETED_EVENT = "talk-deleted";
+const COMMENT_ADDED_EVENT = "comment-added";
 
 export class TalksUpdatedEvent extends Event {
   static TYPE = "talks-updated";

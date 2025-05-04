@@ -37,8 +37,8 @@ class TalkFormComponent extends Component {
 
   #formSubmitted(event) {
     event.preventDefault();
-    if (this.#validateForm(event.target)) {
-      this.#submitTalk(event.target);
+    if (this.#validateForm(event.currentTarget)) {
+      this.#submitTalk(event.currentTarget);
     }
   }
 
