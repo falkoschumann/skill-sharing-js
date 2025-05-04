@@ -1,20 +1,20 @@
 // Copyright (c) 2025 Falko Schumann. All rights reserved. MIT license.
 
 import { failure, success } from "../../public/js/domain/messages.js";
-import { Repository } from "../infrastructure/repository.js";
+import { TalksRepository } from "../infrastructure/talks_repository.js";
 import { ConsoleGateway } from "../../public/js/infrastructure/console_gateway.js";
 
 export const TALKS_CHANGED_EVENT = "talks-changed";
 
-export class Service extends EventTarget {
+export class TalksService extends EventTarget {
   static create(configuration) {
-    const repository = Repository.create(configuration.repository);
-    return new Service(repository, ConsoleGateway.create());
+    const repository = TalksRepository.create(configuration.repository);
+    return new TalksService(repository, ConsoleGateway.create());
   }
 
   static createNull({ talks } = {}) {
-    const repository = Repository.createNull({ talks });
-    return new Service(repository, ConsoleGateway.createNull());
+    const repository = TalksRepository.createNull({ talks });
+    return new TalksService(repository, ConsoleGateway.createNull());
   }
 
   #repository;

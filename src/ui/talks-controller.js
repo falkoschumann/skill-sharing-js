@@ -7,7 +7,7 @@ import {
   validateSubmitTalkCommand,
   validateTalksQuery,
 } from "../../public/js/domain/messages.js";
-import { TALKS_CHANGED_EVENT } from "../application/service.js";
+import { TALKS_CHANGED_EVENT } from "../application/talks_service.js";
 
 export class TalksController {
   #services;

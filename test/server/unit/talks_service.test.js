@@ -8,9 +8,9 @@ import {
   validateTalksQuery,
   validateTalksQueryResult,
 } from "../../../public/js/domain/messages.js";
-import { Service } from "../../../src/application/service.js";
+import { TalksService } from "../../../src/application/talks_service.js";
 import { ConsoleGateway } from "../../../public/js/infrastructure/console_gateway.js";
-import { Repository } from "../../../src/infrastructure/repository.js";
+import { TalksRepository } from "../../../src/infrastructure/talks_repository.js";
 import {
   createTestAddCommentCommand,
   createTestDeleteTalkCommand,
@@ -22,31 +22,31 @@ import {
 describe("Service", () => {
   describe("Submit talk", () => {
     it("Adds talk to list", async () => {
-      const { service, repository } = configure();
+      const { service, talksRepository } = configure();
 
       const status = await service.submitTalk(createTestSubmitTalkCommand());
 
       expect(status).toEqual(success());
-      const talks = await repository.findAll();
+      const talks = await talksRepository.findAll();
       expect(talks).toEqual([createTestTalk()]);
     });
   });
 
   describe("Add comment", () => {
     it("Adds comment to talk", async () => {
-      const { service, repository } = configure({
+      const { service, talksRepository } = configure({
         talks: [createTestTalk()],
       });
 
       const status = await service.addComment(createTestAddCommentCommand());
 
       expect(status).toEqual(success());
-      const talks = await repository.findAll();
+      const talks = await talksRepository.findAll();
       expect(talks).toEqual([createTestTalkWithComment()]);
     });
 
     it("Reports an error when talk does not exist", async () => {
-      const { service, repository } = configure({
+      const { service, talksRepository } = configure({
         talks: [createTestTalk()],
       });
 
@@ -61,31 +61,31 @@ describe("Service", () => {
           'The comment cannot be added because the talk "Non existing title" does not exist.',
         ),
       );
-      const talks = await repository.findAll();
+      const talks = await talksRepository.findAll();
       expect(talks).toEqual([createTestTalk()]);
     });
   });
 
   describe("Delete talk", () => {
     it("Removes talk from list", async () => {
-      const { service, repository } = configure({
+      const { service, talksRepository } = configure({
         talks: [createTestTalk()],
       });
 
       const status = await service.deleteTalk(createTestDeleteTalkCommand());
 
       expect(status).toEqual(success());
-      const talks = await repository.findAll();
+      const talks = await talksRepository.findAll();
       expect(talks).toEqual([]);
     });
 
     it("Does not report an error when talk does not exist", async () => {
-      const { service, repository } = configure();
+      const { service, talksRepository } = configure();
 
       const status = await service.deleteTalk(createTestDeleteTalkCommand());
 
       expect(status).toEqual(success());
-      const talks = await repository.findAll();
+      const talks = await talksRepository.findAll();
       expect(talks).toEqual([]);
     });
   });
@@ -133,7 +133,10 @@ describe("Service", () => {
 });
 
 function configure({ talks } = {}) {
-  const repository = Repository.createNull({ talks });
-  const service = new Service(repository, ConsoleGateway.createNull());
-  return { service, repository };
+  const talksRepository = TalksRepository.createNull({ talks });
+  const service = new TalksService(
+    talksRepository,
+    ConsoleGateway.createNull(),
+  );
+  return { service, talksRepository };
 }

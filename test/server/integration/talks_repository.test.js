@@ -4,7 +4,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { Repository } from "../../../src/infrastructure/repository.js";
+import { TalksRepository } from "../../../src/infrastructure/talks_repository.js";
 import {
   createTestTalk,
   createTestTalkWithComment,
@@ -35,7 +35,7 @@ describe("Repository", () => {
 
   describe("Find all", () => {
     it("Returns list of all talks", async () => {
-      const repository = Repository.create({ fileName: exampleFile });
+      const repository = TalksRepository.create({ fileName: exampleFile });
 
       const talks = await repository.findAll();
 
@@ -43,7 +43,7 @@ describe("Repository", () => {
     });
 
     it("Returns empty list when file does not exist", async () => {
-      const repository = Repository.create({ fileName: nonExistingFile });
+      const repository = TalksRepository.create({ fileName: nonExistingFile });
 
       const talks = await repository.findAll();
 
@@ -51,7 +51,7 @@ describe("Repository", () => {
     });
 
     it("Reports an error when file is corrupt", async () => {
-      const repository = Repository.create({ fileName: corruptedFile });
+      const repository = TalksRepository.create({ fileName: corruptedFile });
 
       const result = repository.findAll();
 
@@ -61,7 +61,7 @@ describe("Repository", () => {
 
   describe("Find by title", () => {
     it("Returns talk with title", async () => {
-      const repository = Repository.create({ fileName: exampleFile });
+      const repository = TalksRepository.create({ fileName: exampleFile });
       const expectedTalk = createTestTalkWithComment();
 
       const actualTalk = await repository.findByTitle(expectedTalk.title);
@@ -70,7 +70,7 @@ describe("Repository", () => {
     });
 
     it("Returns undefined when talk with title does not exist", async () => {
-      const repository = Repository.create({ fileName: exampleFile });
+      const repository = TalksRepository.create({ fileName: exampleFile });
 
       const talk = await repository.findByTitle("Non existing title");
 
@@ -78,7 +78,7 @@ describe("Repository", () => {
     });
 
     it("Returns undefined when file does not exist", async () => {
-      const repository = Repository.create({ fileName: nonExistingFile });
+      const repository = TalksRepository.create({ fileName: nonExistingFile });
 
       const talks = await repository.findByTitle("Any title");
 
@@ -86,7 +86,7 @@ describe("Repository", () => {
     });
 
     it("Reports an error when file is corrupt", async () => {
-      const repository = Repository.create({ fileName: corruptedFile });
+      const repository = TalksRepository.create({ fileName: corruptedFile });
 
       const result = repository.findByTitle("Any title");
 
@@ -96,7 +96,7 @@ describe("Repository", () => {
 
   describe("Add or update", () => {
     it("Creates file when file does not exist", async () => {
-      const repository = Repository.create({ fileName: testFile });
+      const repository = TalksRepository.create({ fileName: testFile });
 
       const talk = createTestTalk();
       await repository.save(talk);
@@ -106,7 +106,7 @@ describe("Repository", () => {
     });
 
     it("Adds talk when file exists", async () => {
-      const repository = Repository.create({ fileName: testFile });
+      const repository = TalksRepository.create({ fileName: testFile });
       const talk1 = createTestTalk({ title: "Foo" });
       await repository.save(talk1);
 
@@ -118,7 +118,7 @@ describe("Repository", () => {
     });
 
     it("Updates talk when talk exists", async () => {
-      const repository = Repository.create({ fileName: testFile });
+      const repository = TalksRepository.create({ fileName: testFile });
       const talk = createTestTalk({
         presenter: "Alice",
       });
@@ -132,7 +132,7 @@ describe("Repository", () => {
     });
 
     it("Reports an error when file is corrupt", async () => {
-      const repository = Repository.create({ fileName: corruptedFile });
+      const repository = TalksRepository.create({ fileName: corruptedFile });
 
       const talk = createTestTalk();
       const result = repository.save(talk);
@@ -143,7 +143,7 @@ describe("Repository", () => {
 
   describe("Remove", () => {
     it("Removes talk", async () => {
-      const repository = Repository.create({ fileName: testFile });
+      const repository = TalksRepository.create({ fileName: testFile });
       const talk = createTestTalk();
       await repository.save(talk);
 
@@ -154,7 +154,7 @@ describe("Repository", () => {
     });
 
     it("Does not reports an error when file does not exist", async () => {
-      const repository = Repository.create({ fileName: testFile });
+      const repository = TalksRepository.create({ fileName: testFile });
 
       const talks = await repository.deleteByTitle("Any title");
 
@@ -162,7 +162,7 @@ describe("Repository", () => {
     });
 
     it("Reports an error when file is corrupt", async () => {
-      const repository = Repository.create({ fileName: corruptedFile });
+      const repository = TalksRepository.create({ fileName: corruptedFile });
 
       const result = repository.deleteByTitle("Any title");
 
@@ -172,7 +172,7 @@ describe("Repository", () => {
 
   describe("Memory repository", () => {
     it("Creates empty", async () => {
-      const repository = Repository.createNull();
+      const repository = TalksRepository.createNull();
 
       const talks = await repository.findAll();
 
@@ -180,7 +180,7 @@ describe("Repository", () => {
     });
 
     it("Initializes with talks", async () => {
-      const repository = Repository.createNull({
+      const repository = TalksRepository.createNull({
         talks: [createTestTalk()],
       });
 
@@ -190,7 +190,7 @@ describe("Repository", () => {
     });
 
     it("Writes and reads talks", async () => {
-      const repository = Repository.createNull();
+      const repository = TalksRepository.createNull();
 
       await repository.save(createTestTalk());
       const talks = await repository.findAll();

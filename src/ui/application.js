@@ -2,8 +2,8 @@
 
 import express from "express";
 
-import { Service } from "../application/service.js";
-import { RepositoryConfiguration } from "../infrastructure/repository.js";
+import { TalksService } from "../application/talks_service.js";
+import { TalksRepositoryConfiguration } from "../infrastructure/talks_repository.js";
 import { TalksController } from "./talks-controller.js";
 import { StaticFilesController } from "./static-files-controller.js";
 import { ConsoleGateway } from "../../public/js/infrastructure/console_gateway.js";
@@ -11,7 +11,7 @@ import { ConsoleGateway } from "../../public/js/infrastructure/console_gateway.j
 export class SkillSharingConfiguration {
   static create({
     server = ServerConfiguration.create(),
-    repository = RepositoryConfiguration.create(),
+    repository = TalksRepositoryConfiguration.create(),
   } = {}) {
     return new SkillSharingConfiguration(server, repository);
   }
@@ -38,7 +38,7 @@ export class ServerConfiguration {
 
 export class SkillSharingApplication {
   static create(configuration = SkillSharingConfiguration.create()) {
-    const service = Service.create(configuration);
+    const service = TalksService.create(configuration);
     return new SkillSharingApplication(
       configuration.server,
       service,

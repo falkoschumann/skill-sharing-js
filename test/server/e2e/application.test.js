@@ -16,7 +16,7 @@ import {
   validateTalksQuery,
   validateTalksQueryResult,
 } from "../../../public/js/domain/messages.js";
-import { RepositoryConfiguration } from "../../../src/infrastructure/repository.js";
+import { TalksRepositoryConfiguration } from "../../../src/infrastructure/talks_repository.js";
 import {
   createTestAddCommentCommand,
   createTestComment,
@@ -205,7 +205,7 @@ async function startAndStop(run) {
   const port = 3333;
   const configuration = SkillSharingConfiguration.create({
     server: ServerConfiguration.create({ address, port }),
-    repository: RepositoryConfiguration.create({ fileName }),
+    repository: TalksRepositoryConfiguration.create({ fileName }),
   });
 
   const application = SkillSharingApplication.create(configuration);

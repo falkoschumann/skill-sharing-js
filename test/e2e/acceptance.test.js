@@ -10,7 +10,7 @@ import {
   SkillSharingApplication,
   SkillSharingConfiguration,
 } from "../../src/ui/application.js";
-import { RepositoryConfiguration } from "../../src/infrastructure/repository.js";
+import { TalksRepositoryConfiguration } from "../../src/infrastructure/talks_repository.js";
 
 describe("User Acceptance Tests", () => {
   it("Submit and comment a talk", async () => {
@@ -51,7 +51,7 @@ async function startAndStop(run) {
 
   const configuration = SkillSharingConfiguration.create({
     server,
-    repository: RepositoryConfiguration.create({ fileName }),
+    repository: TalksRepositoryConfiguration.create({ fileName }),
   });
 
   const application = SkillSharingApplication.create(configuration);

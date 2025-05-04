@@ -5,15 +5,15 @@ import path from "node:path";
 
 import { validateTalk } from "../../public/js/domain/talks.js";
 
-export class RepositoryConfiguration {
+export class TalksRepositoryConfiguration {
   static create({
     fileName = process.env.REPOSITORY_FILE_NAME || "./data/talks.json",
   } = {}) {
-    return new RepositoryConfiguration(fileName);
+    return new TalksRepositoryConfiguration(fileName);
   }
 
   static createTestInstance({ fileName = "null-repository.json" } = {}) {
-    return new RepositoryConfiguration(fileName);
+    return new TalksRepositoryConfiguration(fileName);
   }
 
   constructor(fileName) {
@@ -21,14 +21,14 @@ export class RepositoryConfiguration {
   }
 }
 
-export class Repository {
-  static create(configuration = RepositoryConfiguration.create()) {
-    return new Repository(configuration, fsPromise);
+export class TalksRepository {
+  static create(configuration = TalksRepositoryConfiguration.create()) {
+    return new TalksRepository(configuration, fsPromise);
   }
 
   static createNull({ talks } = {}) {
-    return new Repository(
-      RepositoryConfiguration.createTestInstance(),
+    return new TalksRepository(
+      TalksRepositoryConfiguration.createTestInstance(),
       new FsStub(talks),
     );
   }
