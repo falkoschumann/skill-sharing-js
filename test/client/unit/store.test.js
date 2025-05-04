@@ -16,7 +16,7 @@ import {
 } from "../../../public/js/application/talks_slice.js";
 import { User } from "../../../public/js/domain/users.js";
 import { Api } from "../../../public/js/infrastructure/api.js";
-import { Repository } from "../../../public/js/infrastructure/repository.js";
+import { UsersRepository } from "../../../public/js/infrastructure/users_repository.js";
 import { createTestTalk } from "../../data/testdata.js";
 
 describe("Store", () => {
@@ -115,7 +115,7 @@ describe("Store", () => {
 });
 
 function configure({ user } = {}) {
-  const repository = Repository.createNull({ user });
+  const repository = UsersRepository.createNull({ user });
   const api = Api.createNull();
   const store = createStore(api, repository);
   return { store, repository, api };

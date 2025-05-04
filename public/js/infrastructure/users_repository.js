@@ -4,13 +4,13 @@ import { User } from "../domain/users.js";
 
 const storageKey = "skillSharing";
 
-export class Repository {
+export class UsersRepository {
   static create() {
-    return new Repository(globalThis.localStorage);
+    return new UsersRepository(globalThis.localStorage);
   }
 
   static createNull({ user } = {}) {
-    return new Repository(new StorageStub(user));
+    return new UsersRepository(new StorageStub(user));
   }
 
   #storage;

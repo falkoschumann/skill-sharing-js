@@ -5,15 +5,15 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { User } from "../../../public/js/domain/users.js";
-import { Repository } from "../../../public/js/infrastructure/repository.js";
+import { UsersRepository } from "../../../public/js/infrastructure/users_repository.js";
 
-describe("Repository", () => {
+describe("User repository", () => {
   beforeEach(() => {
     localStorage.clear();
   });
 
   it("Loads and store settings", async () => {
-    const repository = Repository.create();
+    const repository = UsersRepository.create();
 
     await repository.store({ username: "Alice" });
     const settings = await repository.load();
@@ -22,7 +22,7 @@ describe("Repository", () => {
   });
 
   it("Loads empty object when storage is empty", async () => {
-    const repository = Repository.create();
+    const repository = UsersRepository.create();
 
     const settings = await repository.load();
 
@@ -31,7 +31,7 @@ describe("Repository", () => {
 
   describe("Memory repository", () => {
     it("Creates empty", async () => {
-      const repository = Repository.createNull();
+      const repository = UsersRepository.createNull();
 
       const settings = await repository.load();
 
@@ -39,7 +39,7 @@ describe("Repository", () => {
     });
 
     it("Initializes with user", async () => {
-      const repository = Repository.createNull({
+      const repository = UsersRepository.createNull({
         user: User.create({ username: "Bob" }),
       });
 
@@ -49,7 +49,7 @@ describe("Repository", () => {
     });
 
     it("Loads and store settings", async () => {
-      const repository = Repository.createNull();
+      const repository = UsersRepository.createNull();
 
       await repository.store({ username: "Charly" });
       const settings = await repository.load();

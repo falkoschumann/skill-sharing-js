@@ -3,10 +3,10 @@
 import { configureStore } from "@reduxjs/toolkit";
 
 import talksReducer from "./talks_slice.js";
-import { Repository } from "../infrastructure/repository.js";
+import { UsersRepository } from "../infrastructure/users_repository.js";
 import { Api } from "../infrastructure/api.js";
 
-export const store = createStore(Api.create(), Repository.create());
+export const store = createStore(Api.create(), UsersRepository.create());
 
 export function createStore(api, repository) {
   return configureStore({
