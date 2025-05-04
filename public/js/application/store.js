@@ -4,9 +4,9 @@ import { configureStore } from "@reduxjs/toolkit";
 
 import talksReducer from "./talks_slice.js";
 import { UsersRepository } from "../infrastructure/users_repository.js";
-import { Api } from "../infrastructure/api.js";
+import { TalksApi } from "../infrastructure/talks_api.js";
 
-export const store = createStore(Api.create(), UsersRepository.create());
+export const store = createStore(TalksApi.create(), UsersRepository.create());
 
 export function createStore(api, repository) {
   return configureStore({

@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Falko Schumann. All rights reserved. MIT license.
 
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { TalksUpdatedEvent } from "../infrastructure/api.js";
+import { TalksUpdatedEvent } from "../infrastructure/talks_api.js";
 import {
   validateAddCommentCommand,
   validateDeleteTalkCommand,

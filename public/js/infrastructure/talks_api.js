@@ -18,13 +18,13 @@ export class TalksUpdatedEvent extends Event {
   }
 }
 
-export class Api extends EventTarget {
+export class TalksApi extends EventTarget {
   static create() {
-    return new Api(SseClient.create(), globalThis.fetch.bind(globalThis));
+    return new TalksApi(SseClient.create(), globalThis.fetch.bind(globalThis));
   }
 
   static createNull() {
-    return new Api(SseClient.createNull(), fetchStub);
+    return new TalksApi(SseClient.createNull(), fetchStub);
   }
 
   #talksClient;

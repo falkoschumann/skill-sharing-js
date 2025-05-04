@@ -10,7 +10,7 @@ import {
   validateSubmitTalkCommand,
 } from "../../../public/js/domain/messages.js";
 import { validateComment } from "../../../public/js/domain/talks.js";
-import { Api } from "../../../public/js/infrastructure/api.js";
+import { TalksApi } from "../../../public/js/infrastructure/talks_api.js";
 import { SseClient } from "../../../public/js/infrastructure/sse_client.js";
 import { createTestTalk } from "../../data/testdata.js";
 
@@ -85,6 +85,6 @@ describe("API", () => {
 
 function configure() {
   const sseClient = SseClient.createNull();
-  const api = new Api(sseClient, () => {});
+  const api = new TalksApi(sseClient, () => {});
   return { api, sseClient };
 }
