@@ -22,12 +22,12 @@ import { createTestTalk } from "../../data/testdata.js";
 describe("Store", () => {
   describe("Change user", () => {
     it("Updates user name", async () => {
-      const { store, repository } = configure();
+      const { store, usersRepository } = configure();
 
       const user = User.createTestInstance();
       await store.dispatch(changeUser(user));
 
-      const settings = await repository.load();
+      const settings = await usersRepository.load();
       expect(selectUser(store.getState())).toEqual(user);
       expect(settings).toEqual(user);
     });
@@ -54,8 +54,8 @@ describe("Store", () => {
 
   describe("Submit talk", () => {
     it("Adds talk to list", async () => {
-      const { store, api } = configure();
-      const talksSubmitted = api.trackTalksSubmitted();
+      const { store, talksApi } = configure();
+      const talksSubmitted = talksApi.trackTalksSubmitted();
 
       await store.dispatch(
         submitTalk({
@@ -72,8 +72,8 @@ describe("Store", () => {
 
   describe("Adds comment", () => {
     it("Adds comment to an existing talk", async () => {
-      const { store, api } = configure();
-      const commentsAdded = api.trackCommentsAdded();
+      const { store, talksApi } = configure();
+      const commentsAdded = talksApi.trackCommentsAdded();
 
       await store.dispatch(
         addComment({
@@ -93,8 +93,8 @@ describe("Store", () => {
 
   describe("Delete talk", () => {
     it("Removes talk from list", async () => {
-      const { store, api } = configure();
-      const talksDeleted = api.trackTalksDeleted();
+      const { store, talksApi } = configure();
+      const talksDeleted = talksApi.trackTalksDeleted();
 
       await store.dispatch(deleteTalk({ title: "Foobar" }));
 
@@ -104,10 +104,10 @@ describe("Store", () => {
 
   describe("Talks", () => {
     it("Lists all talks", async () => {
-      const { store, api } = configure();
+      const { store, talksApi } = configure();
 
       await store.dispatch(start());
-      api.simulateMessage(JSON.stringify([createTestTalk()]));
+      talksApi.simulateMessage(JSON.stringify([createTestTalk()]));
 
       expect(selectTalks(store.getState())).toEqual([createTestTalk()]);
     });
@@ -115,8 +115,8 @@ describe("Store", () => {
 });
 
 function configure({ user } = {}) {
-  const repository = UsersRepository.createNull({ user });
-  const api = TalksApi.createNull();
-  const store = createStore(api, repository);
-  return { store, repository, api };
+  const usersRepository = UsersRepository.createNull({ user });
+  const talksApi = TalksApi.createNull();
+  const store = createStore(talksApi, usersRepository);
+  return { store, usersRepository, talksApi };
 }
