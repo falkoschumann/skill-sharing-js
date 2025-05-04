@@ -213,7 +213,6 @@ async function startAndStop(run) {
   const url = `http://${address}:${port}`;
   const client = new ServiceClient(url);
   const source = new EventSource(`${url}/api/talks`);
-  await new Promise((resolve) => source.addEventListener("open", resolve));
   try {
     await run({ url, client, source });
   } finally {
