@@ -94,7 +94,7 @@ describe("Repository", () => {
     });
   });
 
-  describe("Add or update", () => {
+  describe("Save", () => {
     it("Creates file when file does not exist", async () => {
       const repository = TalksRepository.create({ fileName: testFile });
 
@@ -141,8 +141,8 @@ describe("Repository", () => {
     });
   });
 
-  describe("Remove", () => {
-    it("Removes talk", async () => {
+  describe("Delete", () => {
+    it("Deletes talk", async () => {
       const repository = TalksRepository.create({ fileName: testFile });
       const talk = createTestTalk();
       await repository.save(talk);
