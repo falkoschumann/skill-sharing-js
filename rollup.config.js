@@ -15,6 +15,7 @@ export default [
     plugins: [
       nodeResolve({ browser: true }),
       replace({
+        preventAssignment: true,
         "process.env.NODE_ENV": JSON.stringify("production"),
       }),
       copy({
