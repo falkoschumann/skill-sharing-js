@@ -1,7 +1,8 @@
 # Possible values: major, minor, patch or concrete version
 VERSION=minor
 
-export NODE_OPTIONS=
+# TODO Remove --experimental-eventsource when Node.js supports it
+export NODE_OPTIONS=--experimental-eventsource
 export NPM_CONFIG_YES=true
 
 all: dist check

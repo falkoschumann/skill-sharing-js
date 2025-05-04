@@ -2,7 +2,6 @@
 
 import fs from "node:fs/promises";
 import path from "node:path";
-import { EventSource } from "eventsource";
 import request from "supertest";
 import { describe, expect, it } from "vitest";
 
@@ -213,7 +212,6 @@ async function startAndStop(run) {
   await application.start();
   const url = `http://${address}:${port}`;
   const client = new ServiceClient(url);
-  // TODO Remove dependency on eventsource when Node.js supports it
   const source = new EventSource(`${url}/api/talks`);
   await new Promise((resolve) => source.addEventListener("open", resolve));
   try {
