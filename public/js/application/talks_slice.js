@@ -11,7 +11,7 @@ import { validateComment } from "../domain/talks.js";
 
 const initialState = {
   talks: [],
-  user: "Anon",
+  user: { username: "Anon" },
 };
 
 const start = createAsyncThunk("talks/start", async (action, thunkApi) => {
@@ -39,10 +39,10 @@ const submitTalk = createAsyncThunk(
   "talks/submitTalk",
   async ({ title, summary }, thunkApi) => {
     const { talksApi } = thunkApi.extra;
-    const presenter = selectUser(thunkApi.getState());
+    const { username } = selectUser(thunkApi.getState());
     const command = validateSubmitTalkCommand({
       title,
-      presenter,
+      presenter: username,
       summary,
     });
     return talksApi.submitTalk(command);
@@ -53,10 +53,10 @@ const addComment = createAsyncThunk(
   "talks/addComment",
   async ({ title, message }, thunkApi) => {
     const { talksApi } = thunkApi.extra;
-    const author = selectUser(thunkApi.getState());
+    const { username } = selectUser(thunkApi.getState());
     const command = validateAddCommentCommand({
       title,
-      comment: validateComment({ author, message }),
+      comment: validateComment({ author: username, message }),
     });
     return talksApi.addComment(command);
   },
@@ -76,7 +76,7 @@ const talksSlice = createSlice({
   initialState,
   reducers: {
     userChanged: (state, action) => {
-      state.user = action.payload.username;
+      state.user = action.payload;
     },
     talksUpdated: (state, action) => {
       state.talks = action.payload.talks;
@@ -85,7 +85,7 @@ const talksSlice = createSlice({
   extraReducers: (builder) => {
     // Change user
     builder.addCase(changeUser.fulfilled, (state, action) => {
-      state.user = action.payload.username;
+      state.user = action.payload;
     });
   },
   selectors: {

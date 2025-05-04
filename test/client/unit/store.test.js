@@ -28,7 +28,7 @@ describe("Store", () => {
       await store.dispatch(changeUser(user));
 
       const settings = await repository.load();
-      expect(selectUser(store.getState())).toEqual(user.username);
+      expect(selectUser(store.getState())).toEqual(user);
       expect(settings).toEqual(user);
     });
   });
@@ -39,7 +39,7 @@ describe("Store", () => {
 
       await store.dispatch(start());
 
-      expect(selectUser(store.getState())).toEqual("Anon");
+      expect(selectUser(store.getState())).toEqual({ username: "Anon" });
     });
 
     it("Is stored user", async () => {
@@ -48,7 +48,7 @@ describe("Store", () => {
 
       await store.dispatch(start());
 
-      expect(selectUser(store.getState())).toEqual(user.username);
+      expect(selectUser(store.getState())).toEqual(user);
     });
   });
 
