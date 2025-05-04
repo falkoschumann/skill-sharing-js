@@ -8,7 +8,7 @@ import { TalksApi } from "../infrastructure/talks_api.js";
 
 export const store = createStore(TalksApi.create(), UsersRepository.create());
 
-export function createStore(api, repository) {
+export function createStore(talksApi, usersRepository) {
   return configureStore({
     reducer: {
       talks: talksReducer,
@@ -16,7 +16,7 @@ export function createStore(api, repository) {
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
         thunk: {
-          extraArgument: { api, repository },
+          extraArgument: { talksApi, usersRepository },
         },
       }),
   });

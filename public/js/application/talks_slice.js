@@ -15,22 +15,22 @@ const initialState = {
 };
 
 const start = createAsyncThunk("talks/start", async (action, thunkApi) => {
-  const { api, repository } = thunkApi.extra;
+  const { talksApi, usersRepository } = thunkApi.extra;
 
-  api.addEventListener(TalksUpdatedEvent.TYPE, (event) =>
+  talksApi.addEventListener(TalksUpdatedEvent.TYPE, (event) =>
     thunkApi.dispatch(talksUpdated({ talks: event.talks })),
   );
-  api.connect();
+  talksApi.connect();
 
-  const user = await repository.load();
+  const user = await usersRepository.load();
   thunkApi.dispatch(userChanged({ username: user?.username ?? "Anon" }));
 });
 
 const changeUser = createAsyncThunk(
   "talks/changeUser",
   async ({ username }, thunkApi) => {
-    const { repository } = thunkApi.extra;
-    await repository.store({ username });
+    const { usersRepository } = thunkApi.extra;
+    await usersRepository.store({ username });
     return { username };
   },
 );
@@ -38,36 +38,36 @@ const changeUser = createAsyncThunk(
 const submitTalk = createAsyncThunk(
   "talks/submitTalk",
   async ({ title, summary }, thunkApi) => {
-    const { api } = thunkApi.extra;
+    const { talksApi } = thunkApi.extra;
     const presenter = selectUser(thunkApi.getState());
     const command = validateSubmitTalkCommand({
       title,
       presenter,
       summary,
     });
-    return api.submitTalk(command);
+    return talksApi.submitTalk(command);
   },
 );
 
 const addComment = createAsyncThunk(
   "talks/addComment",
   async ({ title, message }, thunkApi) => {
-    const { api } = thunkApi.extra;
+    const { talksApi } = thunkApi.extra;
     const author = selectUser(thunkApi.getState());
     const command = validateAddCommentCommand({
       title,
       comment: validateComment({ author, message }),
     });
-    return api.addComment(command);
+    return talksApi.addComment(command);
   },
 );
 
 const deleteTalk = createAsyncThunk(
   "talks/deleteTalk",
   async ({ title }, thunkApi) => {
-    const { api } = thunkApi.extra;
+    const { talksApi } = thunkApi.extra;
     const command = validateDeleteTalkCommand({ title });
-    return api.deleteTalk(command);
+    return talksApi.deleteTalk(command);
   },
 );
 
