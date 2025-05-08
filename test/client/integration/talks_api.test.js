@@ -51,7 +51,7 @@ describe("Talks API", () => {
     ]);
   });
 
-  it("Posts comment", async () => {
+  it("Adds comment", async () => {
     const { api } = configure();
     const commentsPosted = api.trackCommentsAdded();
 

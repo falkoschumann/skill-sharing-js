@@ -100,7 +100,7 @@ export default talksSlice.reducer;
 export { start, changeUser, submitTalk, addComment, deleteTalk };
 
 // Sync Actions
-const { userChanged, talksUpdated } = talksSlice.actions;
+const { talksUpdated, userChanged } = talksSlice.actions;
 
 // Selectors
 export const { selectTalks, selectUser } = talksSlice.selectors;
