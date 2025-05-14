@@ -13,7 +13,7 @@ import {
 import { TalksRepositoryConfiguration } from "../../src/infrastructure/talks_repository.js";
 
 describe("User Acceptance Tests", () => {
-  it("Submit and comment a talk", { timeout: 60000 }, async () => {
+  it("Submit and comment a talk", { timeout: 60_000 }, async () => {
     await startAndStop(async (browser) => {
       const app = new SkillSharing(browser);
       await app.gotoSubmission();
