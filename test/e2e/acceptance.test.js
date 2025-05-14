@@ -13,32 +13,28 @@ import {
 import { TalksRepositoryConfiguration } from "../../src/infrastructure/talks_repository.js";
 
 describe("User Acceptance Tests", () => {
-  it(
-    "Submit and comment a talk",
-    async () => {
-      await startAndStop(async (browser) => {
-        const app = new SkillSharing(browser);
-        await app.gotoSubmission();
-        await app.setViewport({ width: 800, height: 1024 });
-        await app.saveScreenshot({ name: "01-app-started" });
+  it("Submit and comment a talk", { timeout: 60000 }, async () => {
+    await startAndStop(async (browser) => {
+      const app = new SkillSharing(browser);
+      await app.gotoSubmission();
+      await app.setViewport({ width: 800, height: 1024 });
+      await app.saveScreenshot({ name: "01-app-started" });
 
-        await app.submitTalk({ title: "Foobar", summary: "Lorem ipsum" });
-        await app.saveScreenshot({ name: "02-talk-submitted" });
-        await app.verifyTalkAdded({ title: "Foobar", summary: "Lorem ipsum" });
+      await app.submitTalk({ title: "Foobar", summary: "Lorem ipsum" });
+      await app.saveScreenshot({ name: "02-talk-submitted" });
+      await app.verifyTalkAdded({ title: "Foobar", summary: "Lorem ipsum" });
 
-        await app.changeUser({ name: "Bob" });
-        await app.commentOnTalk({ comment: "Amazing!" });
-        await app.saveScreenshot({ name: "03-talk-commented" });
-        await app.verifyCommentAdded({ author: "Bob", comment: "Amazing!" });
+      await app.changeUser({ name: "Bob" });
+      await app.commentOnTalk({ comment: "Amazing!" });
+      await app.saveScreenshot({ name: "03-talk-commented" });
+      await app.verifyCommentAdded({ author: "Bob", comment: "Amazing!" });
 
-        await app.changeUser({ name: "Anon" });
-        await app.commentOnTalk({ comment: "Thanks." });
-        await app.saveScreenshot({ name: "04-comment-answered" });
-        await app.verifyCommentAdded({ author: "Anon", comment: "Thanks." });
-      });
-    },
-    { timeout: 60000 },
-  );
+      await app.changeUser({ name: "Anon" });
+      await app.commentOnTalk({ comment: "Thanks." });
+      await app.saveScreenshot({ name: "04-comment-answered" });
+      await app.verifyCommentAdded({ author: "Anon", comment: "Thanks." });
+    });
+  });
 });
 
 const server = ServerConfiguration.create({ address: "localhost", port: 4444 });
