@@ -13,7 +13,7 @@ import {
 import { TalksRepositoryConfiguration } from "../../src/infrastructure/talks_repository.js";
 
 describe("User Acceptance Tests", () => {
-  it("Submit and comment a talk", { timeout: 60_000 }, async () => {
+  it("Submit and comment a talk", async () => {
     await startAndStop(async (browser) => {
       const app = new SkillSharing(browser);
       await app.gotoSubmission();
@@ -22,7 +22,11 @@ describe("User Acceptance Tests", () => {
 
       await app.submitTalk({ title: "Foobar", summary: "Lorem ipsum" });
       await app.saveScreenshot({ name: "02-talk-submitted" });
-      await app.verifyTalkAdded({ title: "Foobar", summary: "Lorem ipsum" });
+      await app.verifyTalkAdded({
+        title: "Foobar",
+        presenter: "Anon",
+        summary: "Lorem ipsum",
+      });
 
       await app.changeUser({ name: "Bob" });
       await app.commentOnTalk({ comment: "Amazing!" });
@@ -34,7 +38,7 @@ describe("User Acceptance Tests", () => {
       await app.saveScreenshot({ name: "04-comment-answered" });
       await app.verifyCommentAdded({ author: "Anon", comment: "Thanks." });
     });
-  });
+  }, 60_000);
 });
 
 const server = ServerConfiguration.create({ address: "localhost", port: 4444 });
@@ -123,7 +127,7 @@ class SkillSharing {
     await submitButton.click();
   }
 
-  async verifyTalkAdded({ title, summary }) {
+  async verifyTalkAdded({ title, presenter, summary }) {
     const lastTalkTitle = await this.#page.waitForSelector(
       "s-talks > section:last-child h2",
     );
@@ -131,6 +135,14 @@ class SkillSharing {
       (node) => node.textContent,
     );
     expect(actualTitle).toContain(title);
+
+    const lastTalkPresenter = await this.#page.waitForSelector(
+      "s-talks > section:last-child strong",
+    );
+    const actualPresenter = await lastTalkPresenter.evaluate(
+      (node) => node.textContent,
+    );
+    expect(actualPresenter).toContain(presenter);
 
     const lastTalkSummary = await this.#page.waitForSelector(
       "s-talks > section:last-child p",
