@@ -33,7 +33,7 @@
     "jsdom": "26.1.0",
     "nodemon": "3.1.10",
     "prettier": "3.5.3",
-    "puppeteer": "24.10.1",
+    "puppeteer": "24.10.2",
     "rollup": "4.43.0",
     "rollup-plugin-copy": "3.5.0",
     "supertest": "7.1.1",
