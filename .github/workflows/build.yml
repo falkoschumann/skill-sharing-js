@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # Build with Node.js LTS and current versions
+        # Build with Node.js LTS and current version
         node-version: [22.x, 24.x]
     steps:
       - name: Disable AppArmor
