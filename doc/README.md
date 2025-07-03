@@ -35,32 +35,11 @@
 
 ### Users
 
-```mermaid
-classDiagram
-    class User {
-        username: String
-    }
-```
+![Talk User](./aggregate-user.png)
 
 ### Talks
 
-```mermaid
-classDiagram
-    direction LR
-
-    class Talk {
-        title: String
-        presenter: String
-        summary: String
-    }
-
-    class Comment {
-        author: String
-        message: String
-    }
-
-    Talk *--> Comment: comments
-```
+![Talk Aggregate](./aggregate-talk.png)
 
 ## Architecture
 

@@ -1,0 +1,18 @@
+@startuml
+
+title "Talk Aggregate"
+
+class Talk {
+  title: String
+  presenter: String
+  summary: String
+}
+
+class Comment {
+  author: String
+  message: String
+}
+
+Talk *-> Comment: comments
+
+@enduml

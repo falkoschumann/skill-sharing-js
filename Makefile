@@ -1,6 +1,9 @@
 # Possible values: major, minor, patch or concrete version
 VERSION=minor
 
+PLANTUML_FILES = $(wildcard doc/*.puml)
+DIAGRAM_FILES = $(subst .puml,.png,$(PLANTUML_FILES))
+
 # TODO Remove --experimental-eventsource when Node.js supports it
 export NODE_OPTIONS=--experimental-eventsource
 export NPM_CONFIG_YES=true
@@ -24,6 +27,8 @@ release: all
 
 start: build
 	npm start
+
+doc: $(DIAGRAM_FILES)
 
 check: test
 	npx eslint .
@@ -74,6 +79,9 @@ prepare: version
 version:
 	@echo "Use Node.js $(shell node --version)"
 	@echo "Use NPM $(shell npm --version)"
+
+$(DIAGRAM_FILES): %.png: %.puml
+	plantuml $^
 
 .PHONY: all clean distclean dist release start \
 	check format \

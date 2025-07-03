@@ -1,0 +1,9 @@
+@startuml
+
+title "User Aggregate"
+
+class User {
+  username: String
+}
+
+@enduml
